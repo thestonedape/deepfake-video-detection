@@ -1,0 +1,13 @@
+{
+  "id": "thestonedape/my-awesome-kernel",
+  "title": "My Awesome Kernel",
+  "code_file": "deepfake_video_training_kaggle.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "enable_tpu": false
+}

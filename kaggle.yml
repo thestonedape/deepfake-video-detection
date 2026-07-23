@@ -1,0 +1,10 @@
+project: my-awesome-kernel
+kernel_slug: thestonedape/my-awesome-kernel
+code_file: deepfake_video_training_kaggle.ipynb
+accelerator: none
+internet: false
+privacy: private
+datasets: []
+competitions: []
+outputs:
+  download_to: .kaggle-outputs/

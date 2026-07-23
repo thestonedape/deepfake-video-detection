@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deepfake Detector Architecture Diagram</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #54616f;
+      --line: #ccd6df;
+      --surface: #ffffff;
+      --paper: #f6f8fb;
+      --spatial: #dbeafe;
+      --spatial-border: #3b82f6;
+      --freq: #dcfce7;
+      --freq-border: #16a34a;
+      --fusion: #fef3c7;
+      --fusion-border: #d97706;
+      --eval: #fce7f3;
+      --eval-border: #db2777;
+      --shadow: 0 12px 32px rgba(23, 32, 42, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 30px 24px 48px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 860px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .badge-stack {
+      display: grid;
+      gap: 8px;
+      min-width: 260px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 14px rgba(23, 32, 42, 0.05);
+      font-size: 13px;
+    }
+
+    .badge strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .architecture {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stage-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .branch-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .node {
+      position: relative;
+      min-height: 112px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .node h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .node p,
+    .node li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .node ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .node .shape {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: rgba(23, 32, 42, 0.06);
+      color: var(--ink);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .spatial {
+      background: var(--spatial);
+      border-color: var(--spatial-border);
+    }
+
+    .frequency {
+      background: var(--freq);
+      border-color: var(--freq-border);
+    }
+
+    .fusion {
+      background: var(--fusion);
+      border-color: var(--fusion-border);
+    }
+
+    .evaluation {
+      background: var(--eval);
+      border-color: var(--eval-border);
+    }
+
+    .connector {
+      position: relative;
+      height: 20px;
+    }
+
+    .connector::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      top: 9px;
+      border-top: 2px solid var(--line);
+    }
+
+    .connector::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 5px;
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid var(--line);
+      border-right: 2px solid var(--line);
+      transform: rotate(45deg);
+      background: transparent;
+    }
+
+    .branch-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .branch {
+      display: grid;
+      gap: 10px;
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .mini-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-flow.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .step {
+      min-height: 90px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 12px;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .classifier {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .layer {
+      border: 1px solid var(--fusion-border);
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 82px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .layer strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: var(--ink);
+    }
+
+    .table-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .fact {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--surface);
+    }
+
+    .fact strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .fact span {
+      font-size: 14px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    .caption {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .caption strong {
+      color: var(--ink);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .swatch {
+      width: 18px;
+      height: 12px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .branch-grid,
+      .stage-row,
+      .table-grid,
+      .classifier {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-flow,
+      .mini-flow.three {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      main {
+        padding: 18px 12px 32px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .mini-flow,
+      .mini-flow.three {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      main {
+        max-width: none;
+        padding: 0;
+      }
+
+      .panel,
+      .badge {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="topbar">
+      <div>
+        <h1>Deepfake Video Detector Architecture</h1>
+        <p class="subtitle">
+          Accurate architecture diagram for the repository model: sampled video frames are processed as
+          face-only RGB images, passed through a dual spatial-frequency image classifier, then aggregated
+          into a single fake/real video decision.
+        </p>
+      </div>
+      <div class="badge-stack" aria-label="Implementation constants">
+        <div class="badge"><strong>Input</strong>10 sampled frames per video</div>
+        <div class="badge"><strong>Image tensor</strong>3 x 224 x 224, ImageNet normalized</div>
+        <div class="badge"><strong>Labels</strong>0 = fake, 1 = real</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>End-To-End Inference Flow</h2>
+      <div class="architecture" aria-label="End-to-end architecture flow">
+        <div class="stage-row">
+          <div class="node">
+            <h3>Video Input</h3>
+            <p>MP4 video from Kaggle face-only dataset or backend upload.</p>
+            <span class="shape">Path(video)</span>
+          </div>
+          <div class="node">
+            <h3>Frame Sampling</h3>
+            <p>OpenCV reads frames; indices are selected with evenly spaced sampling.</p>
+            <span class="shape">FRAMES_PER_VIDEO = 10</span>
+          </div>
+          <div class="node">
+            <h3>Crop And Resize</h3>
+            <p>Kaggle default uses full frame because source videos are already face-only.</p>
+            <span class="shape">224 x 224</span>
+          </div>
+          <div class="node">
+            <h3>RGB Normalize</h3>
+            <p>BGR to RGB, scale to [0, 1], then ImageNet mean/std normalization.</p>
+            <span class="shape">B x 3 x 224 x 224</span>
+          </div>
+          <div class="node evaluation">
+            <h3>Video Decision</h3>
+            <p>Average frame probabilities, then apply argmax for final fake/real class.</p>
+            <span class="shape">mean softmax</span>
+          </div>
+        </div>
+        <div class="connector" aria-hidden="true"></div>
+      </div>
+      <p class="caption">
+        <strong>Preprocessing detail:</strong> in the Kaggle notebook, extracted face images are cached under
+        <code>/kaggle/working/face_images_224px_10f</code>. In the backend service, the same 10-frame sampling
+        and 224px normalization are applied directly during video prediction.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Dual-Branch Frame Classifier</h2>
+      <div class="branch-grid">
+        <div class="branch spatial">
+          <div class="branch-title">
+            <span>Spatial Branch</span>
+            <span>RGB appearance</span>
+          </div>
+          <div class="mini-flow three">
+            <div class="step">
+              <strong>EfficientNet-B4</strong>
+              <span><code>model.features</code> encoder extracts spatial artifacts and face appearance cues.</span>
+            </div>
+            <div class="step">
+              <strong>Average Pool</strong>
+              <span><code>model.avgpool</code> compresses the spatial feature map.</span>
+            </div>
+            <div class="step">
+              <strong>Flatten</strong>
+              <span>Produces the EfficientNet-B4 spatial embedding.</span>
+              <span class="shape">1792D</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch frequency">
+          <div class="branch-title">
+            <span>Frequency Branch</span>
+            <span>spectral artifacts</span>
+          </div>
+          <div class="mini-flow">
+            <div class="step">
+              <strong>Grayscale</strong>
+              <span>Average RGB channels to one intensity map.</span>
+            </div>
+            <div class="step">
+              <strong>FFT Descriptor</strong>
+              <span>Hann window, FFT2, fftshift, log magnitude, 8 radial bins.</span>
+            </div>
+            <div class="step">
+              <strong>DCT-Like Pool</strong>
+              <span>Adaptive average pooling to 4 x 4 gives 16 extra low-frequency values.</span>
+            </div>
+            <div class="step">
+              <strong>Frequency MLP</strong>
+              <span><code>Linear 24-&gt;512</code>, ReLU, Dropout 0.2, <code>Linear 512-&gt;1024</code>, ReLU.</span>
+              <span class="shape">1024D</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="node fusion" style="margin-top: 14px;">
+        <h3>Feature Fusion And Classifier Head</h3>
+        <p>
+          The two embeddings are concatenated before the final multilayer classifier:
+          spatial 1792D plus frequency 1024D gives a 2816D fused representation.
+        </p>
+        <div class="classifier" aria-label="Classifier layer stack">
+          <div class="layer">
+            <strong>Fusion</strong>
+            concat<br />
+            1792 + 1024 = 2816
+          </div>
+          <div class="layer">
+            <strong>Block 1</strong>
+            Linear 2816-&gt;1024<br />
+            ReLU<br />
+            Dropout 0.3
+          </div>
+          <div class="layer">
+            <strong>Block 2</strong>
+            Linear 1024-&gt;512<br />
+            ReLU<br />
+            Dropout 0.3
+          </div>
+          <div class="layer">
+            <strong>Output</strong>
+            Linear 512-&gt;256<br />
+            ReLU, Dropout 0.2<br />
+            Linear 256-&gt;2 logits
+          </div>
+        </div>
+      </div>
+
+      <div class="legend" aria-label="Diagram legend">
+        <span class="legend-item"><span class="swatch" style="background: var(--spatial); border-color: var(--spatial-border);"></span>Spatial CNN path</span>
+        <span class="legend-item"><span class="swatch" style="background: var(--freq); border-color: var(--freq-border);"></span>Frequency artifact path</span>
+        <span class="legend-item"><span class="swatch" style="background: var(--fusion); border-color: var(--fusion-border);"></span>Fusion classifier</span>
+        <span class="legend-item"><span class="swatch" style="background: var(--eval); border-color: var(--eval-border);"></span>Video-level output</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Probability Aggregation</h2>
+      <div class="stage-row">
+        <div class="node">
+          <h3>Per-Frame Logits</h3>
+          <p>Classifier returns two logits for each sampled frame.</p>
+          <span class="shape">N x 2</span>
+        </div>
+        <div class="node">
+          <h3>Softmax</h3>
+          <p>Convert logits into calibrated class probabilities used by the notebook and backend.</p>
+          <span class="shape">p(fake), p(real)</span>
+        </div>
+        <div class="node">
+          <h3>Mean Over Frames</h3>
+          <p>Average fake and real probabilities over the 10 selected frames.</p>
+          <span class="shape">mean dim=0</span>
+        </div>
+        <div class="node evaluation">
+          <h3>Final Label</h3>
+          <p>The class with the larger averaged probability becomes the video prediction.</p>
+          <span class="shape">argmax</span>
+        </div>
+        <div class="node evaluation">
+          <h3>Confidence</h3>
+          <p>The maximum averaged probability is returned as confidence.</p>
+          <span class="shape">max prob</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Implementation Facts For Paper Caption</h2>
+      <div class="table-grid">
+        <div class="fact">
+          <strong>Model class</strong>
+          <span>DeepfakeImageDetector</span>
+        </div>
+        <div class="fact">
+          <strong>Backbone</strong>
+          <span>efficientnet_b4</span>
+        </div>
+        <div class="fact">
+          <strong>Spatial dimension</strong>
+          <span>1792</span>
+        </div>
+        <div class="fact">
+          <strong>Frequency descriptor</strong>
+          <span>8 + 16 = 24</span>
+        </div>
+        <div class="fact">
+          <strong>Frequency embedding</strong>
+          <span>1024</span>
+        </div>
+        <div class="fact">
+          <strong>Fused dimension</strong>
+          <span>2816</span>
+        </div>
+        <div class="fact">
+          <strong>Output classes</strong>
+          <span>fake, real</span>
+        </div>
+        <div class="fact">
+          <strong>Aggregation</strong>
+          <span>mean probabilities</span>
+        </div>
+      </div>
+      <p class="caption">
+        <strong>Suggested caption:</strong> The detector samples 10 frames per video, resizes each frame to
+        224 x 224, and classifies each frame using a dual-branch architecture. EfficientNet-B4 extracts
+        spatial features while a handcrafted frequency path encodes FFT radial-band and pooled grayscale
+        descriptors. The 1792D spatial feature and 1024D frequency embedding are concatenated into a 2816D
+        vector and passed through a multilayer classifier to produce fake/real logits. Video-level inference
+        averages frame softmax probabilities before the final decision.
+      </p>
+      <p class="caption">
+        <strong>Code sources:</strong> <code>backend/model.py</code> and <code>deepfake_video_training_kaggle.ipynb</code>.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
