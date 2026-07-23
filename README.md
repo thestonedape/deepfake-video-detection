@@ -81,7 +81,7 @@ flowchart LR
 deepfake-video-detection/
 |-- frontend/                   React and TypeScript web application
 |   |-- src/App.tsx             Upload and prediction interface
-|   |-- src/styles.css          Indigo Dashboard theme
+|   |-- src/theme.ts            Material UI theme configuration
 |   `-- vercel.json             SPA routing and cache headers
 |-- backend/                    FastAPI inference service
 |   |-- app.py                  API routes, CORS, and upload validation
