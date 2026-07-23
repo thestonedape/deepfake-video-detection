@@ -16,6 +16,15 @@ const API_URL =
   import.meta.env.VITE_API_URL ??
   'https://deepfake-video-detection-486r.onrender.com';
 
+if (
+  import.meta.env.PROD &&
+  (API_URL.includes('localhost') || API_URL.includes('127.0.0.1'))
+) {
+  console.error(
+    'Production build is using a local API URL. Set VITE_API_URL in Vercel.',
+  );
+}
+
 function formatPercent(value: number) {
   return `${(value * 100).toFixed(1)}%`;
 }
