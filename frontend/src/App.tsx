@@ -12,7 +12,9 @@ type PredictionResponse = {
   sampled_frames: number;
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+const API_URL =
+  import.meta.env.VITE_API_URL ??
+  'https://deepfake-video-detection-486r.onrender.com';
 
 function formatPercent(value: number) {
   return `${(value * 100).toFixed(1)}%`;

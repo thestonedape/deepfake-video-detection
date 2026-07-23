@@ -16,3 +16,9 @@ npm run dev
 - Environment variable: `VITE_API_URL`
 
 Set `VITE_API_URL` to the Render backend URL before deploying.
+
+Current backend:
+
+```text
+https://deepfake-video-detection-486r.onrender.com
+```
