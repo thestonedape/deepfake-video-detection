@@ -57,9 +57,9 @@ flowchart LR
 | Spatial branch | EfficientNet-B4 feature encoder |
 | Spatial representation | 1792 dimensions |
 | Frequency input | 8 radial FFT bins + 16 pooled grayscale values |
-| Frequency MLP | 24 -> 512 -> 1024 |
+| Frequency MLP | 24 → 512 → 1024 |
 | Fusion | 1792 + 1024 = 2816 dimensions |
-| Classifier | 2816 -> 1024 -> 512 -> 256 -> 2 |
+| Classifier | 2816 → 1024 → 512 → 256 → 2 |
 | Output labels | `fake`, `real` |
 | Video prediction | Mean probability across sampled frames |
 
@@ -79,19 +79,19 @@ flowchart LR
 
 ```text
 deepfake-video-detection/
-|-- frontend/                   React and TypeScript web application
-|   |-- src/App.tsx             Upload and prediction interface
-|   |-- src/theme.ts            Material UI theme configuration
-|   `-- vercel.json             SPA routing and cache headers
-|-- backend/                    FastAPI inference service
-|   |-- app.py                  API routes, CORS, and upload validation
-|   |-- model.py                Model architecture and video inference
-|   |-- best_model.pt           Git LFS checkpoint
-|   |-- requirements.txt        Pinned CPU dependencies
-|   `-- render.yaml             Standalone Render configuration
-|-- render.yaml                 Monorepo Render configuration
-|-- vercel.json                 Monorepo Vercel configuration
-`-- deepfake_video_training_kaggle.ipynb
+├── frontend/                   React and TypeScript web application
+│   ├── src/App.tsx             Upload and prediction interface
+│   ├── src/theme.ts            Material UI theme configuration
+│   └── vercel.json             SPA routing and cache headers
+├── backend/                    FastAPI inference service
+│   ├── app.py                  API routes, CORS, and upload validation
+│   ├── model.py                Model architecture and video inference
+│   ├── requirements.txt        Pinned CPU dependencies
+│   └── render.yaml             Standalone Render configuration
+├── best_model.pt               Git LFS checkpoint
+├── render.yaml                 Monorepo Render configuration
+├── vercel.json                 Monorepo Vercel configuration
+└── deepfake_video_training_kaggle.ipynb
 ```
 
 ## API
@@ -135,7 +135,7 @@ Example response:
 Clone the repository and download the checkpoint:
 
 ```powershell
-git clone https://github.com/diyalibiswas1998/deepfake-video-detection.git
+git clone https://github.com/thestonedape/deepfake-video-detection.git
 cd deepfake-video-detection
 git lfs install
 git lfs pull

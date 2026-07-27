@@ -16,7 +16,7 @@ frontend origin is `https://deepfake-ten-psi.vercel.app`.
 ## Required files
 
 - The backend code stays in [backend/app.py](backend/app.py) and [backend/model.py](backend/model.py).
-- The model checkpoint stays at [backend/best_model.pt](backend/best_model.pt).
+- The model checkpoint stays at [best_model.pt](best_model.pt) in the repo root.
 - Track the checkpoint with Git LFS before pushing the repository.
 
 ## Git LFS
@@ -25,8 +25,8 @@ Run these commands from the repository root:
 
 ```powershell
 git lfs install
-git lfs track "backend/best_model.pt"
-git add .gitattributes .gitignore backend/best_model.pt
+git lfs track "best_model.pt"
+git add .gitattributes .gitignore best_model.pt
 git commit -m "Track model checkpoint with Git LFS"
 git push origin main
 ```
@@ -41,7 +41,7 @@ If `best_model.pt` was already committed as a normal Git object, first move the
 existing history to LFS:
 
 ```powershell
-git lfs migrate import --include="backend/best_model.pt" --everything
+git lfs migrate import --include="best_model.pt" --everything
 git push --force-with-lease origin main
 ```
 

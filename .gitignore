@@ -5,3 +5,6 @@ __pycache__/
 venv/
 frontend/node_modules/
 frontend/dist/
+
+# Keep a single checkpoint in the repository root.
+backend/best_model.pt

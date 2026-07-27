@@ -14,4 +14,6 @@ python -m uvicorn app:app --reload
 - Start command: `uvicorn app:app --host 0.0.0.0 --port $PORT`
 - Health check: `/health`
 
-Keep `best_model.pt` in this folder next to `app.py` when you push this folder to GitHub as a separate repository.
+For the monorepo deployment, keep `best_model.pt` in the repository root.
+`app.py` also supports a checkpoint beside itself when `backend/` is deployed
+as a separate repository.
