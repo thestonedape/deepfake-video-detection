@@ -311,17 +311,7 @@ DNNL_PRIMITIVE_CACHE_CAPACITY=0
 MALLOC_ARENA_MAX=2
 ```
 
-Build command:
-
-```text
-pip install -r backend/requirements.txt
-```
-
-Start command:
-
-```text
-cd backend && python scripts/supervise.py
-```
+Runtime: Docker, repository-root `Dockerfile`, default image command (no Python build/start override). Select the free instance and **After CI Checks Pass** auto-deployment.
 
 The upgraded service is configured to deploy from the root `Dockerfile`. `scripts/supervise.py` runs the API and one arq worker in one container, because the free tier has no separate worker service. It also needs `DATABASE_URL` (PostgreSQL), `REDIS_URL` (native `rediss://` TLS URL), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a private `SUPABASE_VIDEO_BUCKET`. `docker compose up --build` runs PostgreSQL, Redis, migrations, API and worker locally. CI (`.github/workflows/verify.yml`) runs the tests against real PostgreSQL/Redis, builds the frontend and the Docker image, and triggers `RENDER_DEPLOY_HOOK` only on a passing `main` build. Free instances sleep: jobs survive restarts, but uninterrupted availability is not promised.
 
@@ -337,3 +327,5 @@ and [FRONTEND_DEPLOYMENT.md](FRONTEND_DEPLOYMENT.md) for additional details.
 Large uploads retain the 100 MB API ceiling on free Supabase storage: originals above 45 MiB are stored as ordered 4 MiB private objects, followed by a versioned size/SHA-256 manifest. Workers reconstruct the original stream and verify its integrity before decoding. Failed chunk uploads clean attempted objects; successful-job cleanup removes parts and manifest. Interrupted API uploads before a ledger commit can leave orphaned objects and require an operator storage sweep; no automatic orphan retention claim is made. Tests exercise a 51 MiB original, corruption and partial upload failures.
 
 Docker builds verify the original checkpoint size and SHA-256. If the host leaves a Git LFS pointer, the build fetches the pinned artifact from this own public repository and verifies it before replacing the pointer; corrupt files fail the build. `scripts/migrate.py` creates the private ledger and enables RLS without changing existing rows. The separately provisioned Deepfake database has its Data API disabled.
+
+Final deployment candidate (`artifacts/container-512m-deploy-check.json`): 100/100 completed, 53 fresh jobs / 47 cache hits, upload acknowledgement p95 0.289 s, fresh end-to-end p95 22.185 s, cache-hit p50 0.115 s, cold readiness 12.020 s, total container peak 388,276,224 bytes, zero OOM. These are local synthetic 64x64-video measurements with local storage and a warm host cache, not live throughput. A real private Supabase storage test round-tripped 51 MiB above the provider object ceiling with identical SHA-256 and complete cleanup (`artifacts/live-storage-check.json`); it is storage evidence only.
