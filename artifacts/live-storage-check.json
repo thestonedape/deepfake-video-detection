@@ -1,0 +1,9 @@
+{
+  "scope": "real private Supabase storage roundtrip, synthetic 51 MiB bytes; no model inference or accuracy claim",
+  "bytes": 53477376,
+  "upload_seconds": 16.620689599993057,
+  "download_seconds": 39.734013699999196,
+  "sha256_match": true,
+  "passed": true,
+  "cleanup_completed": true
+}
