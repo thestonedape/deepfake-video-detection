@@ -1,0 +1,17 @@
+{
+  "recorded_after_runs": true,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "logical_cpus": 16,
+  "versions": {
+    "numpy": "2.4.6",
+    "fastapi": "0.115.12",
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0",
+    "opencv-python-headless": "5.0.0.93",
+    "onnxruntime": "1.30.0",
+    "arq": "0.26.3",
+    "sqlalchemy": "2.0.43",
+    "asyncpg": "0.30.0"
+  }
+}

@@ -1,0 +1,14 @@
+.git
+.env
+.venv
+frontend
+artifacts
+**/__pycache__
+**/.pytest_cache
+backend/storage
+*.ipynb
+backend/best_model.pt
+**/.env
+**/.env.*
+!**/.env.example
+backend/tests

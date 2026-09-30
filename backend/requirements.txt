@@ -6,3 +6,8 @@ torch==2.6.0+cpu
 torchvision==0.21.0+cpu
 numpy==2.2.4
 opencv-python-headless==4.11.0.86
+
+arq==0.26.3
+sqlalchemy[asyncio]==2.0.43
+asyncpg==0.30.0
+httpx==0.28.1

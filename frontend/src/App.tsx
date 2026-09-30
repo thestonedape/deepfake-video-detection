@@ -85,6 +85,7 @@ export default function App() {
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [jobStatus, setJobStatus] = useState('');
 
   useEffect(() => {
     if (!selectedFile) {
@@ -99,6 +100,7 @@ export default function App() {
 
   function handleFileChange(file: File | null) {
     setPrediction(null);
+    setJobStatus('Waking the service and uploading your video…');
     setError(null);
     if (file && file.size > MAX_UPLOAD_BYTES) {
       setSelectedFile(null);
@@ -123,9 +125,10 @@ export default function App() {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await fetch(`${API_URL}/predict`, {
+      const response = await fetch(`${API_URL}/jobs`, {
         method: 'POST',
         body: formData,
+        signal: AbortSignal.timeout(180_000),
       });
 
       if (!response.ok) {
@@ -133,8 +136,32 @@ export default function App() {
         throw new Error(payload?.detail ?? 'Prediction request failed.');
       }
 
-      const data = (await response.json()) as PredictionResponse;
-      setPrediction(data);
+      const accepted = await response.json();
+      let job = accepted;
+      const deadline = Date.now() + 15 * 60_000;
+      let delay = 1000;
+      while (job.status !== 'completed') {
+        if (job.status === 'failed') throw new Error('This video could not be analyzed. Try a shorter, playable clip.');
+        if (Date.now() >= deadline) throw new Error('The job is taking longer than expected. Please try again later.');
+        setJobStatus(job.status === 'processing' ? 'Analyzing your video…' : 'Your video is queued…');
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay = Math.min(10_000, delay * 1.5);
+        try {
+          const poll = await fetch(`${API_URL}/jobs/${accepted.job_id}`, {
+            headers: { 'X-Job-Token': accepted.job_token },
+            signal: AbortSignal.timeout(30_000),
+          });
+          if (poll.status >= 500) { setJobStatus('Waiting for the service to recover…'); continue; }
+          if (!poll.ok) throw new Error('Unable to retrieve this job.');
+          job = await poll.json();
+        } catch (pollError) {
+          if (pollError instanceof TypeError || (pollError instanceof DOMException && pollError.name === 'TimeoutError')) {
+            setJobStatus('Reconnecting to the service…'); continue;
+          }
+          throw pollError;
+        }
+      }
+      setPrediction({ filename: selectedFile.name, ...job.result });
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -143,6 +170,7 @@ export default function App() {
       );
     } finally {
       setLoading(false);
+      setJobStatus('');
     }
   }
 
@@ -159,6 +187,7 @@ export default function App() {
     >
       <Container maxWidth="lg">
         <Stack spacing={4}>
+          {loading && jobStatus && <Typography role="status" color="text.secondary">{jobStatus}</Typography>}
           <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
             <Chip
               icon={<ShieldOutlinedIcon />}
