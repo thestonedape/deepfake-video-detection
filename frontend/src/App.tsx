@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { submitVideo } from './jobs.mjs';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -125,43 +126,9 @@ export default function App() {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await fetch(`${API_URL}/jobs`, {
-        method: 'POST',
-        body: formData,
-        signal: AbortSignal.timeout(180_000),
-      });
-
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.detail ?? 'Prediction request failed.');
-      }
-
-      const accepted = await response.json();
-      let job = accepted;
-      const deadline = Date.now() + 15 * 60_000;
-      let delay = 1000;
-      while (job.status !== 'completed') {
-        if (job.status === 'failed') throw new Error('This video could not be analyzed. Try a shorter, playable clip.');
-        if (Date.now() >= deadline) throw new Error('The job is taking longer than expected. Please try again later.');
-        setJobStatus(job.status === 'processing' ? 'Analyzing your video…' : 'Your video is queued…');
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        delay = Math.min(10_000, delay * 1.5);
-        try {
-          const poll = await fetch(`${API_URL}/jobs/${accepted.job_id}`, {
-            headers: { 'X-Job-Token': accepted.job_token },
-            signal: AbortSignal.timeout(30_000),
-          });
-          if (poll.status >= 500) { setJobStatus('Waiting for the service to recover…'); continue; }
-          if (!poll.ok) throw new Error('Unable to retrieve this job.');
-          job = await poll.json();
-        } catch (pollError) {
-          if (pollError instanceof TypeError || (pollError instanceof DOMException && pollError.name === 'TimeoutError')) {
-            setJobStatus('Reconnecting to the service…'); continue;
-          }
-          throw pollError;
-        }
-      }
-      setPrediction({ filename: selectedFile.name, ...job.result });
+      setJobStatus('Waking the service and uploading your video…');
+      const result = await submitVideo(API_URL, formData, setJobStatus);
+      setPrediction({ filename: selectedFile.name, ...result });
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
