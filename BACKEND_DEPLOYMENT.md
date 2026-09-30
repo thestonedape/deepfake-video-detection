@@ -1,3 +1,5 @@
+> Upgrade rollout is pending. Use the root Dockerfile with the API/worker supervisor, PostgreSQL, native TLS Redis and private Supabase storage as documented in [README](README.md#deployment). The measured total-container-memory gate currently fails; do not deploy the upgrade on a 512 MB host. The legacy instructions below describe the previous synchronous service only. Preserve that revision for rollback.
+
 # Backend Deployment
 
 Deploy the FastAPI app on a CPU-only Render Python web service. The production
