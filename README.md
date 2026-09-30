@@ -194,6 +194,8 @@ In the "before" column, the single-slot worker idled up to 5 s (arq `poll_delay`
 
 A second export using PyTorch 2.6.0 and ONNX Runtime 1.22.1 disabled constant folding and graph optimizations (`python backend/scripts/convert_onnx.py --unfused`). All 50 synthetic frame labels still matched, but maximum absolute probability difference was 0.00295 (`artifacts/onnx-unfused-verification.json`), above 0.001. Feeding the original Torch frequency features into this export produced the same discrepancy (`artifacts/onnx-unfused-diagnostics.json`), so changing NumPy FFT alone does not resolve it. This runtime remains unadopted. The previously measured container results above predate frame-retention resizing and are not claimed as new measurements.
 
+The same unfused conversion was repeated in the Linux deployment image with PyTorch 2.6.0 and ONNX Runtime 1.22.1. It also failed: 50/50 labels matched but maximum absolute probability difference was 0.00348 (`artifacts/onnx-linux/onnx-unfused-verification.json`). `--output-dir` keeps platform reports separate. Neither conversion is used by the service.
+
 ## Local development
 
 ### Prerequisites

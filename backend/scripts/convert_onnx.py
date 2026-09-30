@@ -5,6 +5,7 @@ import hashlib
 import argparse
 import json
 import sys
+import platform
 from pathlib import Path
 import numpy as np
 root=Path(__file__).resolve().parents[1]
@@ -38,12 +39,13 @@ class ExportNetwork(torch.nn.Module):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--unfused',action='store_true',help='Disable exporter constant folding and ORT graph optimizations')
+    parser.add_argument('--output-dir',type=Path,default=root.parent/'artifacts')
     args=parser.parse_args()
     suffix='-unfused' if args.unfused else ''
-    out=root.parent/'artifacts';out.mkdir(exist_ok=True)
+    out=args.output_dir;out.mkdir(parents=True,exist_ok=True)
     service=DeepfakeService(root/'best_model.pt')
     wrapper=ExportNetwork(service.model).eval()
-    report={'adopted':False,'torch_version':torch.__version__,'onnxruntime_version':ort.__version__,'unfused':args.unfused,'corpus':'50 synthetic normalized 224x224 RGB frame inputs, seed 7300930; numerical verification only','labels':{'0':'fake','1':'real'}}
+    report={'adopted':False,'platform':platform.platform(),'torch_version':torch.__version__,'onnxruntime_version':ort.__version__,'unfused':args.unfused,'corpus':'50 synthetic normalized 224x224 RGB frame inputs, seed 7300930; numerical verification only','labels':{'0':'fake','1':'real'}}
     try:
         example=torch.zeros(1,3,224,224)
         torch.onnx.export(wrapper,(example,extract_frequency_features(example)),str(out/f'detector{suffix}.onnx'),input_names=['images','frequency'],output_names=['logits'],opset_version=17,dynamo=False,do_constant_folding=not args.unfused)
