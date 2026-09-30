@@ -5,6 +5,7 @@ COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./
 COPY best_model.pt ./best_model.pt
+RUN python scripts/verify_checkpoint.py
 RUN useradd --create-home appuser && mkdir -p /app/storage && chown -R appuser:appuser /app
 USER appuser
 EXPOSE 8000
