@@ -10,6 +10,7 @@ def validate(report):
     return (report.get("memory_limit") == "512m"
             and report.get("requests", 0) >= 100
             and successes == report["requests"]
+            and ('outcomes' not in report or report.get('fresh_jobs', 0) >= 50)
             and isinstance(peak, int) and 0 < peak < 400_000_000
             and report.get("oom_kill_events") == 0
             and report.get("container_oom_killed") is False)
