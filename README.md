@@ -178,7 +178,7 @@ The frontend submits to `/jobs`, polls with exponential backoff, and shows a col
 | Cold start to `/ready` | 7.8 s | 6.3 s |
 | OOM kills | 0 | 0 |
 
-In the "before" column, the single-slot worker idled up to 5 s (arq `poll_delay`) between jobs, and the inference child held both randomly initialized and loaded weights in anonymous memory. Saturation with 30 concurrent clients (`artifacts/container-512m-saturation.json`) produced 85 `429 Retry-After` responses. All 100 jobs completed after client retries, memory stayed at 353 MiB, and there were no OOM kills. `memory.peak` reaches the 512 MiB limit in every run because reclaimable page cache counts towards it. The image is 2.71 GB uncompressed.
+In the "before" column, the single-slot worker idled up to 5 s (arq `poll_delay`) between jobs, and the inference child held both randomly initialized and loaded weights in anonymous memory. Saturation with 30 concurrent clients (`artifacts/container-512m-saturation.json`) produced 85 `429 Retry-After` responses. All 100 jobs completed after client retries, sampled anonymous memory stayed at 353 MiB, and there were no OOM kills. Total cgroup peaks were **512 MiB** for the four-client run and **424 MiB** for saturation. Reclaimable page cache counts toward container memory. Both runs **fail the agreed peak-container-memory-below-400-MB deployment gate**; anonymous memory alone does not establish that gate. The image is 2.71 GB uncompressed.
 
 **Native sequential inference** (Windows, same 50-video corpus, 100 requests; `backend/scripts/benchmark.py`):
 
@@ -214,10 +214,11 @@ cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python -m uvicorn app:app --reload
+python scripts/migrate.py
+python scripts/supervise.py
 ```
 
-The API is available at `http://127.0.0.1:8000`.
+Configure PostgreSQL, native Redis and private Supabase storage in `backend/.env` or exported variables. Alternatively, `docker compose up --build` from the root runs an isolated local stack; its API uses `http://127.0.0.1:8001`.
 
 ### Run the frontend
 
@@ -253,10 +254,10 @@ pip install -r backend/requirements.txt
 Start command:
 
 ```text
-cd backend && uvicorn app:app --host 0.0.0.0 --port $PORT
+cd backend && python scripts/supervise.py
 ```
 
-The upgraded service is deployed from the root `Dockerfile`. `scripts/supervise.py` runs the API and one arq worker in one container, because the free tier has no separate worker service. It also needs `DATABASE_URL` (PostgreSQL), `REDIS_URL` (native `rediss://` TLS URL), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a private `SUPABASE_VIDEO_BUCKET`. `docker compose up --build` runs PostgreSQL, Redis, migrations, API and worker locally. CI (`.github/workflows/verify.yml`) runs the tests against real PostgreSQL/Redis, builds the frontend and the Docker image, and triggers `RENDER_DEPLOY_HOOK` only on a passing `main` build. Free instances sleep: jobs survive restarts, but uninterrupted availability is not promised.
+The upgraded service is configured to deploy from the root `Dockerfile`. `scripts/supervise.py` runs the API and one arq worker in one container, because the free tier has no separate worker service. It also needs `DATABASE_URL` (PostgreSQL), `REDIS_URL` (native `rediss://` TLS URL), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a private `SUPABASE_VIDEO_BUCKET`. `docker compose up --build` runs PostgreSQL, Redis, migrations, API and worker locally. CI (`.github/workflows/verify.yml`) runs the tests against real PostgreSQL/Redis, builds the frontend and the Docker image, and triggers `RENDER_DEPLOY_HOOK` only on a passing `main` build. Free instances sleep: jobs survive restarts, but uninterrupted availability is not promised.
 
 ### Vercel frontend variable
 
