@@ -231,9 +231,20 @@ class DeepfakeService:
         self.device = device or torch.device("cpu")
         self.batch_size = max(1, int(os.getenv("INFERENCE_BATCH_SIZE", "1")))
         torch.set_num_threads(max(1, int(os.getenv("TORCH_NUM_THREADS", "1"))))
-        self.model = DeepfakeImageDetector(backbone="efficientnet_b4", use_pretrained=False).to(self.device)
-        state_dict = torch.load(self.model_path, map_location="cpu", weights_only=True)
-        self.model.load_state_dict(state_dict)
+        if os.getenv("MODEL_LOAD_MODE", "mmap") == "mmap" and self.device.type == "cpu":
+            # Build without allocating random weights, then adopt memory-mapped checkpoint
+            # tensors: weights stay file-backed (reclaimable) instead of two heap copies.
+            with torch.device("meta"):
+                self.model = DeepfakeImageDetector(backbone="efficientnet_b4", use_pretrained=False)
+            state_dict = torch.load(self.model_path, map_location="cpu", weights_only=True, mmap=True)
+            self.model.load_state_dict(state_dict, strict=True, assign=True)
+            leftover = [name for name, tensor in [*self.model.named_parameters(), *self.model.named_buffers()] if tensor.is_meta]
+            if leftover:
+                raise RuntimeError(f"Checkpoint did not materialize: {leftover[:3]}")
+        else:
+            self.model = DeepfakeImageDetector(backbone="efficientnet_b4", use_pretrained=False).to(self.device)
+            state_dict = torch.load(self.model_path, map_location="cpu", weights_only=True)
+            self.model.load_state_dict(state_dict)
         self.model.eval()
 
     def predict_video(self, video_path: Path) -> PredictionResult:

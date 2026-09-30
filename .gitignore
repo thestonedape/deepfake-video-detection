@@ -8,3 +8,8 @@ frontend/dist/
 
 # Keep a single checkpoint in the repository root.
 backend/best_model.pt
+
+artifacts/*.onnx
+artifacts/local/
+backend/storage/
+.pytest_cache/

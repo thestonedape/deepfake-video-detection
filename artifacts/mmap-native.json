@@ -1,0 +1,1170 @@
+{
+  "runtime": "worker",
+  "scope": "native Windows, sequential inference; worker includes IPC but not upload, database, Redis queue wait or cache",
+  "corpus": "50 deterministic synthetic 10-frame 64x64 MJPEG AVI videos, seed 7300930; engineering/numerical tests, not accuracy evidence",
+  "requests": 100,
+  "cold_start_seconds": 7.847355400001106,
+  "warm_p50_seconds": 1.2433960000016668,
+  "warm_p95_seconds": 1.318521314998361,
+  "throughput_per_second": 0.7980628078782326,
+  "peak_process_group_rss_bytes": 531763200,
+  "failures": [],
+  "raw_latency_seconds": [
+    1.2217441000029794,
+    1.2312952000065707,
+    1.233591800002614,
+    1.2433686000003945,
+    1.2378001000033692,
+    1.2326332000011462,
+    1.2434234000029392,
+    1.2329486000016914,
+    1.2439184999966528,
+    1.2273373999996693,
+    1.2392688000036287,
+    1.2616544000047725,
+    1.338755200005835,
+    1.2440929000003962,
+    1.243635799997719,
+    1.2502693999995245,
+    1.228554699999222,
+    1.239166599996679,
+    1.2609115000013844,
+    1.2446984000052908,
+    1.2397142000045278,
+    1.2550828000021284,
+    1.2473176999992575,
+    1.3149080000002868,
+    1.2530690000057803,
+    1.235474000000977,
+    1.2438505999962217,
+    1.2213160999963293,
+    1.24091220000264,
+    1.2255670000013197,
+    1.2323734999954468,
+    1.2414441000000807,
+    1.2364827000055811,
+    1.2652604000031715,
+    1.2673740000027465,
+    1.257646999998542,
+    1.3282949999993434,
+    1.236585800004832,
+    1.26060729999881,
+    1.2791321000040625,
+    1.2374121000029845,
+    1.2451670999944326,
+    1.2434974999996484,
+    1.238057700000354,
+    1.2410287999955472,
+    1.2451508000012836,
+    1.2845369999995455,
+    1.238440699999046,
+    1.2485498999958509,
+    1.2389798000003793,
+    1.2391174000003957,
+    1.272519199999806,
+    1.219322299999476,
+    1.258096799996565,
+    1.3740192999975989,
+    1.3181660999980522,
+    1.2427362999951583,
+    1.2301539999971283,
+    1.2659113999980036,
+    1.2872292999963975,
+    1.3004392999937409,
+    1.2613219999984722,
+    1.273143300000811,
+    1.2379503999982262,
+    1.2340667999960715,
+    1.2927459999991697,
+    1.251304600002186,
+    1.2348492000019178,
+    1.23446139999578,
+    1.2382858999990276,
+    1.2654484000013326,
+    1.2463389999975334,
+    1.2656214000016917,
+    1.2325340999959735,
+    1.2472649999981513,
+    1.235028399998555,
+    1.2328115999989677,
+    1.2223168999989866,
+    1.25528900000063,
+    1.2415780999945127,
+    1.2181036999973003,
+    1.2365138999957708,
+    1.2394434999951045,
+    1.2779621000008774,
+    1.3252704000042286,
+    1.2729891000053613,
+    1.2902031000048737,
+    1.2880233999967459,
+    1.2526419999994687,
+    1.2431843999947887,
+    1.2329043999998248,
+    1.242135700005747,
+    1.2351620999979787,
+    1.232482399995206,
+    1.2488683999981731,
+    1.2262750000008964,
+    1.2365304000049946,
+    1.2419601000001421,
+    1.267194499996549,
+    1.343196000001626
+  ],
+  "results": [
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5735670328140259,
+      "probabilities": {
+        "fake": 0.5735670328140259,
+        "real": 0.42643308639526367
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5371412634849548,
+      "probabilities": {
+        "fake": 0.5371412634849548,
+        "real": 0.4628586769104004
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5491393208503723,
+      "probabilities": {
+        "fake": 0.5491393208503723,
+        "real": 0.4508606791496277
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5339235663414001,
+      "probabilities": {
+        "fake": 0.5339235663414001,
+        "real": 0.4660763740539551
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5644187331199646,
+      "probabilities": {
+        "fake": 0.5644187331199646,
+        "real": 0.4355812668800354
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5664541125297546,
+      "probabilities": {
+        "fake": 0.5664541125297546,
+        "real": 0.43354588747024536
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5757004618644714,
+      "probabilities": {
+        "fake": 0.5757004618644714,
+        "real": 0.42429953813552856
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5670313835144043,
+      "probabilities": {
+        "fake": 0.5670313835144043,
+        "real": 0.4329685568809509
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6099771857261658,
+      "probabilities": {
+        "fake": 0.6099771857261658,
+        "real": 0.3900228440761566
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5990139842033386,
+      "probabilities": {
+        "fake": 0.5990139842033386,
+        "real": 0.40098604559898376
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6151291131973267,
+      "probabilities": {
+        "fake": 0.6151291131973267,
+        "real": 0.38487088680267334
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.55577552318573,
+      "probabilities": {
+        "fake": 0.55577552318573,
+        "real": 0.44422444701194763
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6238581538200378,
+      "probabilities": {
+        "fake": 0.6238581538200378,
+        "real": 0.3761417865753174
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5931724309921265,
+      "probabilities": {
+        "fake": 0.5931724309921265,
+        "real": 0.4068275988101959
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5825093984603882,
+      "probabilities": {
+        "fake": 0.5825093984603882,
+        "real": 0.41749057173728943
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5902513861656189,
+      "probabilities": {
+        "fake": 0.5902513861656189,
+        "real": 0.4097486138343811
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5654681921005249,
+      "probabilities": {
+        "fake": 0.5654681921005249,
+        "real": 0.4345317780971527
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5850088000297546,
+      "probabilities": {
+        "fake": 0.5850088000297546,
+        "real": 0.4149912893772125
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "real",
+      "confidence": 0.5035648941993713,
+      "probabilities": {
+        "fake": 0.49643516540527344,
+        "real": 0.5035648941993713
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6108658909797668,
+      "probabilities": {
+        "fake": 0.6108658909797668,
+        "real": 0.38913410902023315
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5845376253128052,
+      "probabilities": {
+        "fake": 0.5845376253128052,
+        "real": 0.41546234488487244
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5712209939956665,
+      "probabilities": {
+        "fake": 0.5712209939956665,
+        "real": 0.42877906560897827
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.583450198173523,
+      "probabilities": {
+        "fake": 0.583450198173523,
+        "real": 0.4165497422218323
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5361936688423157,
+      "probabilities": {
+        "fake": 0.5361936688423157,
+        "real": 0.46380630135536194
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5711337924003601,
+      "probabilities": {
+        "fake": 0.5711337924003601,
+        "real": 0.4288661479949951
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.603720486164093,
+      "probabilities": {
+        "fake": 0.603720486164093,
+        "real": 0.396279513835907
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5710503458976746,
+      "probabilities": {
+        "fake": 0.5710503458976746,
+        "real": 0.42894965410232544
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5820772051811218,
+      "probabilities": {
+        "fake": 0.5820772051811218,
+        "real": 0.41792282462120056
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5141092538833618,
+      "probabilities": {
+        "fake": 0.5141092538833618,
+        "real": 0.48589086532592773
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5325201749801636,
+      "probabilities": {
+        "fake": 0.5325201749801636,
+        "real": 0.46747979521751404
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.601518988609314,
+      "probabilities": {
+        "fake": 0.601518988609314,
+        "real": 0.3984810709953308
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5712851285934448,
+      "probabilities": {
+        "fake": 0.5712851285934448,
+        "real": 0.42871490120887756
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "real",
+      "confidence": 0.5024241209030151,
+      "probabilities": {
+        "fake": 0.49757590889930725,
+        "real": 0.5024241209030151
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5759575366973877,
+      "probabilities": {
+        "fake": 0.5759575366973877,
+        "real": 0.4240424633026123
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6169198155403137,
+      "probabilities": {
+        "fake": 0.6169198155403137,
+        "real": 0.3830801844596863
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5909262895584106,
+      "probabilities": {
+        "fake": 0.5909262895584106,
+        "real": 0.40907377004623413
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5721174478530884,
+      "probabilities": {
+        "fake": 0.5721174478530884,
+        "real": 0.42788249254226685
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5244649648666382,
+      "probabilities": {
+        "fake": 0.5244649648666382,
+        "real": 0.47553500533103943
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5344952344894409,
+      "probabilities": {
+        "fake": 0.5344952344894409,
+        "real": 0.46550479531288147
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5921102166175842,
+      "probabilities": {
+        "fake": 0.5921102166175842,
+        "real": 0.40788978338241577
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.581663191318512,
+      "probabilities": {
+        "fake": 0.581663191318512,
+        "real": 0.41833680868148804
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5724185109138489,
+      "probabilities": {
+        "fake": 0.5724185109138489,
+        "real": 0.4275814890861511
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5974366664886475,
+      "probabilities": {
+        "fake": 0.5974366664886475,
+        "real": 0.40256327390670776
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.553223729133606,
+      "probabilities": {
+        "fake": 0.553223729133606,
+        "real": 0.44677630066871643
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5880697965621948,
+      "probabilities": {
+        "fake": 0.5880697965621948,
+        "real": 0.41193023324012756
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5185213088989258,
+      "probabilities": {
+        "fake": 0.5185213088989258,
+        "real": 0.481478750705719
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6495914459228516,
+      "probabilities": {
+        "fake": 0.6495914459228516,
+        "real": 0.3504085838794708
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6528670191764832,
+      "probabilities": {
+        "fake": 0.6528670191764832,
+        "real": 0.34713298082351685
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5841094851493835,
+      "probabilities": {
+        "fake": 0.5841094851493835,
+        "real": 0.4158904552459717
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5251726508140564,
+      "probabilities": {
+        "fake": 0.5251726508140564,
+        "real": 0.47482722997665405
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5735670328140259,
+      "probabilities": {
+        "fake": 0.5735670328140259,
+        "real": 0.42643308639526367
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5371412634849548,
+      "probabilities": {
+        "fake": 0.5371412634849548,
+        "real": 0.4628586769104004
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5491393208503723,
+      "probabilities": {
+        "fake": 0.5491393208503723,
+        "real": 0.4508606791496277
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5339235663414001,
+      "probabilities": {
+        "fake": 0.5339235663414001,
+        "real": 0.4660763740539551
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5644187331199646,
+      "probabilities": {
+        "fake": 0.5644187331199646,
+        "real": 0.4355812668800354
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5664541125297546,
+      "probabilities": {
+        "fake": 0.5664541125297546,
+        "real": 0.43354588747024536
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5757004618644714,
+      "probabilities": {
+        "fake": 0.5757004618644714,
+        "real": 0.42429953813552856
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5670313835144043,
+      "probabilities": {
+        "fake": 0.5670313835144043,
+        "real": 0.4329685568809509
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6099771857261658,
+      "probabilities": {
+        "fake": 0.6099771857261658,
+        "real": 0.3900228440761566
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5990139842033386,
+      "probabilities": {
+        "fake": 0.5990139842033386,
+        "real": 0.40098604559898376
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6151291131973267,
+      "probabilities": {
+        "fake": 0.6151291131973267,
+        "real": 0.38487088680267334
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.55577552318573,
+      "probabilities": {
+        "fake": 0.55577552318573,
+        "real": 0.44422444701194763
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6238581538200378,
+      "probabilities": {
+        "fake": 0.6238581538200378,
+        "real": 0.3761417865753174
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5931724309921265,
+      "probabilities": {
+        "fake": 0.5931724309921265,
+        "real": 0.4068275988101959
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5825093984603882,
+      "probabilities": {
+        "fake": 0.5825093984603882,
+        "real": 0.41749057173728943
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5902513861656189,
+      "probabilities": {
+        "fake": 0.5902513861656189,
+        "real": 0.4097486138343811
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5654681921005249,
+      "probabilities": {
+        "fake": 0.5654681921005249,
+        "real": 0.4345317780971527
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5850088000297546,
+      "probabilities": {
+        "fake": 0.5850088000297546,
+        "real": 0.4149912893772125
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "real",
+      "confidence": 0.5035648941993713,
+      "probabilities": {
+        "fake": 0.49643516540527344,
+        "real": 0.5035648941993713
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6108658909797668,
+      "probabilities": {
+        "fake": 0.6108658909797668,
+        "real": 0.38913410902023315
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5845376253128052,
+      "probabilities": {
+        "fake": 0.5845376253128052,
+        "real": 0.41546234488487244
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5712209939956665,
+      "probabilities": {
+        "fake": 0.5712209939956665,
+        "real": 0.42877906560897827
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.583450198173523,
+      "probabilities": {
+        "fake": 0.583450198173523,
+        "real": 0.4165497422218323
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5361936688423157,
+      "probabilities": {
+        "fake": 0.5361936688423157,
+        "real": 0.46380630135536194
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5711337924003601,
+      "probabilities": {
+        "fake": 0.5711337924003601,
+        "real": 0.4288661479949951
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.603720486164093,
+      "probabilities": {
+        "fake": 0.603720486164093,
+        "real": 0.396279513835907
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5710503458976746,
+      "probabilities": {
+        "fake": 0.5710503458976746,
+        "real": 0.42894965410232544
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5820772051811218,
+      "probabilities": {
+        "fake": 0.5820772051811218,
+        "real": 0.41792282462120056
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5141092538833618,
+      "probabilities": {
+        "fake": 0.5141092538833618,
+        "real": 0.48589086532592773
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5325201749801636,
+      "probabilities": {
+        "fake": 0.5325201749801636,
+        "real": 0.46747979521751404
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.601518988609314,
+      "probabilities": {
+        "fake": 0.601518988609314,
+        "real": 0.3984810709953308
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5712851285934448,
+      "probabilities": {
+        "fake": 0.5712851285934448,
+        "real": 0.42871490120887756
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "real",
+      "confidence": 0.5024241209030151,
+      "probabilities": {
+        "fake": 0.49757590889930725,
+        "real": 0.5024241209030151
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5759575366973877,
+      "probabilities": {
+        "fake": 0.5759575366973877,
+        "real": 0.4240424633026123
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6169198155403137,
+      "probabilities": {
+        "fake": 0.6169198155403137,
+        "real": 0.3830801844596863
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5909262895584106,
+      "probabilities": {
+        "fake": 0.5909262895584106,
+        "real": 0.40907377004623413
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5721174478530884,
+      "probabilities": {
+        "fake": 0.5721174478530884,
+        "real": 0.42788249254226685
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5244649648666382,
+      "probabilities": {
+        "fake": 0.5244649648666382,
+        "real": 0.47553500533103943
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5344952344894409,
+      "probabilities": {
+        "fake": 0.5344952344894409,
+        "real": 0.46550479531288147
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5921102166175842,
+      "probabilities": {
+        "fake": 0.5921102166175842,
+        "real": 0.40788978338241577
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.581663191318512,
+      "probabilities": {
+        "fake": 0.581663191318512,
+        "real": 0.41833680868148804
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5724185109138489,
+      "probabilities": {
+        "fake": 0.5724185109138489,
+        "real": 0.4275814890861511
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5974366664886475,
+      "probabilities": {
+        "fake": 0.5974366664886475,
+        "real": 0.40256327390670776
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.553223729133606,
+      "probabilities": {
+        "fake": 0.553223729133606,
+        "real": 0.44677630066871643
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5880697965621948,
+      "probabilities": {
+        "fake": 0.5880697965621948,
+        "real": 0.41193023324012756
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5185213088989258,
+      "probabilities": {
+        "fake": 0.5185213088989258,
+        "real": 0.481478750705719
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6495914459228516,
+      "probabilities": {
+        "fake": 0.6495914459228516,
+        "real": 0.3504085838794708
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.6528670191764832,
+      "probabilities": {
+        "fake": 0.6528670191764832,
+        "real": 0.34713298082351685
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5841094851493835,
+      "probabilities": {
+        "fake": 0.5841094851493835,
+        "real": 0.4158904552459717
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    },
+    {
+      "predicted_label": "fake",
+      "confidence": 0.5251726508140564,
+      "probabilities": {
+        "fake": 0.5251726508140564,
+        "real": 0.47482722997665405
+      },
+      "frame_count": 10,
+      "sampled_frames": 10
+    }
+  ],
+  "corpus_sha256": [
+    "59e9d53377f6f687d2e79f0af788a1203fd4d2874633da06a278ea4cec4adf96",
+    "55b6c91ceeca4e3faa0d562573a207e7bc8470989631539863c56ea0f0348744",
+    "c461a274aa152e643827f336316f9d14770f8e782edd13b01ae861508ec3ef19",
+    "82dfcdf4ff32c282809d57599400c03e398702acc6614196098b01a6fad2df37",
+    "bc11990107424984a3cb9634fdfddeade83635426ba83e97f4e8fb260dd9d509",
+    "38c085097ec4c9460eeadec93f50c879bc794339ceae29929327ac84df0f3069",
+    "9f2f4f2b5f671b33604ae8ca723cdef342502164c5dea61483efb3deccb448e7",
+    "8f72697c6bb8ea36a0ddc225500b2ac8d6ba410ff1154533b0692362ceeeba88",
+    "bc68c07d5d3e492b8d83c4dc0f8d46c283e33469333bee79a713b2b75fb9c53f",
+    "8831a4d15076dd3f13743dca86eab6881efd9990d1a70bc02266c7042753659d",
+    "cfffbc506c3506ed6d72d4b96d1b1aa7048ee49156e08f04976516221d23882d",
+    "806aa3768afe434af7139d5ed499d82cbbe357f9bb17a783c5a6a06f56f6ac99",
+    "5a744f1d422c7e3ef4acb1ad1175521dd573980638c0ff8d020cd371d46132fc",
+    "8c4f926db43c598e147597b2e83001e0f6b2a2785d6d4412cbc06f51b9e1ba55",
+    "820adfdc95b4108047b1243a74d9154a4f870e770653f912be1695f6efbea51a",
+    "cddbb3cc1dfe925923043debf74afb0606d1eb12b3ae648f39617791c4eade35",
+    "a6998b3174dc3982d6a3dff07ba1ee8167c403233272b67f463919464160288d",
+    "4b205621699afb468c172001b9c5e8029b7b362002d774f0ed3a220dd3e2725a",
+    "d9edf533cb445bca7c5ecf0fce7104a6778fa00b071273bbb29c0c9fa316c4c6",
+    "4e60369cc96943e10c693f2b319ca7d067152b5525c818cc045d9c17d236de57",
+    "355bd00bd2f9ec165c474b609f7a3db93940ad35474cbe2868d067267835e11a",
+    "04147132262f6e339a6473226fdaf2afa55b848c16077ce3e7d849175a324d77",
+    "0304040c37de355b146810e9035d73b6aae28462e5087fa25ebb7b9b2c0f1a27",
+    "2e01c45e684c9f931251e461b12258e019c90ec5372e79c93bdabee70d803dbd",
+    "ae2c7f83861aa375813c5d266215c7c72fb0365f1e24237a263c65d8eb100f24",
+    "366874e5c4887a6d64a7b7233c274dc12f6a3d51e9656638a565bc7602c0881b",
+    "f946fcc7342d2550202d357434bdadc06b02bcedfb4afd6edef02da69f8f800f",
+    "b6bd3ea82469cca63337530aaf05a62c66827ba06b292ed96e8dfbcacdb40315",
+    "5d55116805c0e8260763337dcc9161a3dc23179a40d7b9b6d5a5fcabd0cce027",
+    "19c0ce5cec571eee85d738374ac1f367288765473e9077028ce9d270551425e6",
+    "edeb969d515085fe2754f68ab5845fc2e6c2943b8dd6d4dae27b9c59509d589b",
+    "cb960fc7a7ef35d062083526421737869c9761c91cf448e8933f52d03026341e",
+    "fa9664f74ec5c576d285a26abfa55385c7a234dacc2c9525df2ed3f3aa95d5bc",
+    "904e19fe820563b8908b8674afc1aae78219dd88a219e207b1feac44de82442f",
+    "e81d45c0e35f438d11f6ca63734210e3b61830bd6e1ec41bf60b7a41f362401b",
+    "f44909ae63fe030688dbbc64f2082d5036ba682b65d76a3ac3706862403c2dac",
+    "9f22166f40cb331ae0adc315ce61263ba7a4805435e6c10c377a76ce158834be",
+    "7f7ba59f736ba1b87767cf7a6b8663a99bf04ebb54f71d77e2e8ad81f2e4d492",
+    "0d9196f2d4c40dd55c89ef78043909e9083f5fe577a1a4cb8c370264633f8f96",
+    "d3b90ca5ae70c68d08dc3cce7ac12ae6f69ae41c3d6a82b008d2e217ad178837",
+    "c3d6e242a0df09bbfdb04f999b1523fd0c3f28b9945812888d63ac08b0003f56",
+    "555dc81e5bdd980a96bfdd13c82a735f64c582323817aa7899364d27b6ff592e",
+    "7a74cb0b0285f90efd20bceb4a989e94c006f2b77cdd6e62480392c1e16435f2",
+    "0bd733709e8506842943f3afc4d2f81b4b20600c78a3d6dc38de38a84c19e344",
+    "01f30903380acac395a2582d634b2e6e94ae4df492e5032a9393c29a54fd1d82",
+    "39496c4a47a69412604b3809286bf123702569d46a778087ae5ec7b108648f7e",
+    "b60c977ef4bbb7f67ebf7a4cee32c8fcf93b508f547cef442563bb8fe73e3642",
+    "0347f9e1d0532fdc1e49f5a9bd5f47238ea5b49142efb0600d9149f3b4778d3a",
+    "31296e70bbc34f8e21aa689c5c739035456ae546ee4697d78ae8ecc5b867b763",
+    "7d1fe1efeea336e0b68910462d79321583f6ac19780b9426738c1fd003c6c079"
+  ],
+  "model_sha256": "1bdb710834262826666c776e4a80662ae13c196c16a1eff9b16976ffa2abe178",
+  "container_memory": "not measured; summed native RSS can include shared pages"
+}

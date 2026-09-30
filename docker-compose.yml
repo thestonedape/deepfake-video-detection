@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: deepfake
+    ports: ["5434:5432"]
+    volumes: ["deepfake_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d deepfake"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6380:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    command: ["python", "scripts/migrate.py"]
+    environment: &environment
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/deepfake
+      REDIS_URL: redis://redis:6379/0
+      LOCAL_STORAGE_DIR: /app/storage
+      ENVIRONMENT: development
+      MAX_QUEUED_JOBS: "20"
+    depends_on:
+      postgres: {condition: service_healthy}
+  api:
+    build: .
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    environment: *environment
+    ports: ["8001:8000"]
+    volumes: ["video_files:/app/storage"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  worker:
+    build: .
+    command: ["arq", "worker.WorkerSettings"]
+    environment: *environment
+    volumes: ["video_files:/app/storage"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+volumes:
+  deepfake_data:
+  video_files:
