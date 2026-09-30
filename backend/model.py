@@ -167,7 +167,9 @@ def load_sampled_video_frames(
             success, frame = capture.read()
             if not success:
                 break
-            frames_by_index[int(frame_index)] = frame
+            # Retain the exact first preprocessing step, rather than ten full
+            # resolution decoded frames (about 249 MB for 4K inputs).
+            frames_by_index[int(frame_index)] = cv2.resize(frame, (IMAGE_SIZE, IMAGE_SIZE), interpolation=cv2.INTER_AREA)
     finally:
         capture.release()
 
@@ -184,7 +186,7 @@ def load_sampled_video_frames(
                 if not success:
                     break
                 if current_index in required_indices:
-                    frames_by_index[current_index] = frame
+                    frames_by_index[current_index] = cv2.resize(frame, (IMAGE_SIZE, IMAGE_SIZE), interpolation=cv2.INTER_AREA)
                 current_index += 1
         finally:
             capture.release()

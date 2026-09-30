@@ -1,0 +1,255 @@
+{
+  "scope": "50 deterministic synthetic frames; isolates export from NumPy FFT differences",
+  "rows": [
+    {
+      "input": 0,
+      "onnx_with_torch_frequency_difference": 3.516674041748047e-06,
+      "numpy_frequency_difference": 5.173683166503906e-05
+    },
+    {
+      "input": 1,
+      "onnx_with_torch_frequency_difference": 1.4662742614746094e-05,
+      "numpy_frequency_difference": 2.7418136596679688e-05
+    },
+    {
+      "input": 2,
+      "onnx_with_torch_frequency_difference": 9.98377799987793e-07,
+      "numpy_frequency_difference": 1.52587890625e-05
+    },
+    {
+      "input": 3,
+      "onnx_with_torch_frequency_difference": 2.2351741790771484e-07,
+      "numpy_frequency_difference": 1.537799835205078e-05
+    },
+    {
+      "input": 4,
+      "onnx_with_torch_frequency_difference": 1.0132789611816406e-06,
+      "numpy_frequency_difference": 6.58867065794766e-07
+    },
+    {
+      "input": 5,
+      "onnx_with_torch_frequency_difference": 8.940696716308594e-07,
+      "numpy_frequency_difference": 1.9371509552001953e-06
+    },
+    {
+      "input": 6,
+      "onnx_with_torch_frequency_difference": 1.2636184692382812e-05,
+      "numpy_frequency_difference": 1.33514404296875e-05
+    },
+    {
+      "input": 7,
+      "onnx_with_torch_frequency_difference": 5.066394805908203e-07,
+      "numpy_frequency_difference": 2.574920654296875e-05
+    },
+    {
+      "input": 8,
+      "onnx_with_torch_frequency_difference": 3.5762786865234375e-06,
+      "numpy_frequency_difference": 1.728534698486328e-05
+    },
+    {
+      "input": 9,
+      "onnx_with_torch_frequency_difference": 6.556510925292969e-07,
+      "numpy_frequency_difference": 5.459785461425781e-05
+    },
+    {
+      "input": 10,
+      "onnx_with_torch_frequency_difference": 0.00045862700790166855,
+      "numpy_frequency_difference": 5.21540641784668e-07
+    },
+    {
+      "input": 11,
+      "onnx_with_torch_frequency_difference": 7.645828414837297e-13,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 12,
+      "onnx_with_torch_frequency_difference": 9.522333857603371e-05,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 13,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 5.066394805908203e-07
+    },
+    {
+      "input": 14,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 15,
+      "onnx_with_torch_frequency_difference": 3.082911272154706e-39,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 16,
+      "onnx_with_torch_frequency_difference": 8.019425856122918e-24,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 17,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 18,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 19,
+      "onnx_with_torch_frequency_difference": 6.757705506288403e-12,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 20,
+      "onnx_with_torch_frequency_difference": 6.032554665580392e-06,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 21,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 22,
+      "onnx_with_torch_frequency_difference": 5.289912223815918e-06,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 23,
+      "onnx_with_torch_frequency_difference": 1.5449934724658254e-19,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 24,
+      "onnx_with_torch_frequency_difference": 8.191150043364286e-40,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 25,
+      "onnx_with_torch_frequency_difference": 1.394038354261655e-16,
+      "numpy_frequency_difference": 9.5367431640625e-07
+    },
+    {
+      "input": 26,
+      "onnx_with_torch_frequency_difference": 0.0002484321594238281,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 27,
+      "onnx_with_torch_frequency_difference": 0.0029466748237609863,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 28,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 29,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 30,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 3.725290298461914e-07
+    },
+    {
+      "input": 31,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 6.407499313354492e-07
+    },
+    {
+      "input": 32,
+      "onnx_with_torch_frequency_difference": 1.2845407582062762e-07,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 33,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 34,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 35,
+      "onnx_with_torch_frequency_difference": 1.8364517018198967e-07,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 36,
+      "onnx_with_torch_frequency_difference": 0.0005587935447692871,
+      "numpy_frequency_difference": 5.811452865600586e-07
+    },
+    {
+      "input": 37,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 38,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 5.513429641723633e-07
+    },
+    {
+      "input": 39,
+      "onnx_with_torch_frequency_difference": 2.724505065998528e-10,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 40,
+      "onnx_with_torch_frequency_difference": 0.0006829500198364258,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 41,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 42,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 43,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 44,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 45,
+      "onnx_with_torch_frequency_difference": 2.3308996868600144e-38,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 46,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 47,
+      "onnx_with_torch_frequency_difference": 1.7205450773322878e-26,
+      "numpy_frequency_difference": 4.76837158203125e-07
+    },
+    {
+      "input": 48,
+      "onnx_with_torch_frequency_difference": 0.0,
+      "numpy_frequency_difference": 7.152557373046875e-07
+    },
+    {
+      "input": 49,
+      "onnx_with_torch_frequency_difference": 0.00029355287551879883,
+      "numpy_frequency_difference": 7.897615432739258e-07
+    }
+  ]
+}

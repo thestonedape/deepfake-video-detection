@@ -125,6 +125,8 @@ flowchart LR
 
 The existing frame sampling, frequency features, label mapping and codec-seeking fallback are unchanged.
 
+Sampled frames are resized with the existing `INTER_AREA` operation before retention. Ten retained 4K frames previously required 248,832,000 bytes; ten 224×224 BGR samples require 1,505,280 bytes. `backend/tests/test_model_sampling.py` verifies bit-identical preprocessing over 50 synthetic inputs, duplicate padding, capture cleanup and unseekable-codec fallback. These three runtime-dependent tests run separately with PyTorch/OpenCV installed; lightweight PR checks skip them. The full process also includes decoder/model/runtime memory, so this reduction does not establish the 400 MB deployment gate.
+
 ## API
 
 | Route | Behavior |
@@ -189,6 +191,8 @@ In the "before" column, the single-slot worker idled up to 5 s (arq `poll_delay`
 | Results vs original | — | identical on all 100 |
 
 **ONNX export** was tested and **not adopted**. The 50 frame-level labels were unchanged, but the maximum probability difference was 0.226, far above the 0.001 gate (`artifacts/onnx-verification.json`). PyTorch remains the runtime.
+
+A second export using PyTorch 2.6.0 and ONNX Runtime 1.22.1 disabled constant folding and graph optimizations (`python backend/scripts/convert_onnx.py --unfused`). All 50 synthetic frame labels still matched, but maximum absolute probability difference was 0.00295 (`artifacts/onnx-unfused-verification.json`), above 0.001. Feeding the original Torch frequency features into this export produced the same discrepancy (`artifacts/onnx-unfused-diagnostics.json`), so changing NumPy FFT alone does not resolve it. This runtime remains unadopted. The previously measured container results above predate frame-retention resizing and are not claimed as new measurements.
 
 ## Local development
 
