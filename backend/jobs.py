@@ -3,6 +3,11 @@ import hashlib
 import os
 import secrets
 import uuid
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Same configuration for API, migrations and arq; exported variables win.
+load_dotenv(Path(__file__).resolve().parent / ".env", override=False)
 from datetime import datetime, timezone
 from sqlalchemy import String, Text, DateTime, Integer, Boolean, JSON, select, func, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
