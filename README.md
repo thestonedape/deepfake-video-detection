@@ -333,3 +333,7 @@ VITE_API_URL=https://deepfake-video-detection-486r.onrender.com
 
 See [DEPLOYMENT.md](DEPLOYMENT.md), [BACKEND_DEPLOYMENT.md](BACKEND_DEPLOYMENT.md),
 and [FRONTEND_DEPLOYMENT.md](FRONTEND_DEPLOYMENT.md) for additional details.
+
+Large uploads retain the 100 MB API ceiling on free Supabase storage: originals above 45 MiB are stored as ordered 4 MiB private objects, followed by a versioned size/SHA-256 manifest. Workers reconstruct the original stream and verify its integrity before decoding. Failed chunk uploads clean attempted objects; successful-job cleanup removes parts and manifest. Interrupted API uploads before a ledger commit can leave orphaned objects and require an operator storage sweep; no automatic orphan retention claim is made. Tests exercise a 51 MiB original, corruption and partial upload failures.
+
+Docker builds verify the original checkpoint size and SHA-256. If the host leaves a Git LFS pointer, the build fetches the pinned artifact from this own public repository and verifies it before replacing the pointer; corrupt files fail the build. `scripts/migrate.py` creates the private ledger and enables RLS without changing existing rows. The separately provisioned Deepfake database has its Data API disabled.
