@@ -8,8 +8,9 @@
 
 A full-stack deepfake video detection system that combines spatial features from
 EfficientNet-B4 with handcrafted frequency-domain features. The web interface
-uploads a video to a FastAPI service, which samples frames, runs CPU inference,
-and returns a video-level real/fake prediction with confidence scores.
+uploads a video to a FastAPI service, which persists an asynchronous job and
+returns an opaque access capability immediately. A single inference worker
+samples frames and produces a video-level real/fake result with confidence scores.
 
 ## Live links
 
@@ -36,17 +37,16 @@ and returns a video-level real/fake prediction with confidence scores.
 
 ```mermaid
 flowchart LR
-    A[Video upload] --> B[FastAPI validation]
-    B --> C[OpenCV frame sampling]
-    C --> D[224 x 224 preprocessing]
-    D --> E[EfficientNet-B4 spatial branch]
-    D --> F[24D frequency features]
-    F --> G[Frequency MLP]
-    E --> H[2816D fused representation]
-    G --> H
-    H --> I[Frame probabilities]
-    I --> J[Video-level average]
-    J --> K[Real or fake result]
+    A[React upload and polling] --> B[FastAPI validation and queue admission]
+    B --> C[Private Supabase video storage]
+    B --> D[PostgreSQL job ledger]
+    D --> E[Redis arq queue]
+    E --> F[One inference worker]
+    C --> F
+    F --> G[Killable PyTorch subprocess]
+    G --> H[Sampling / spatial and frequency features]
+    H --> I[Result in PostgreSQL]
+    I --> A
 ```
 
 ## Model architecture
@@ -62,6 +62,61 @@ flowchart LR
 | Classifier | 2816 → 1024 → 512 → 256 → 2 |
 | Output labels | `fake`, `real` |
 | Video prediction | Mean probability across sampled frames |
+
+## API and failure handling
+
+| Endpoint | Behavior |
+|---|---|
+| `POST /jobs` | multipart video; `202` with `job_id`, `job_token`, status, cache flag and optional completed result |
+| `GET /jobs/{id}` | requires `X-Job-Token`; missing/wrong capability returns `404`; exposes queued/processing/completed/failed status |
+| `POST /predict` | compatibility endpoint using the same worker; one waiter, up to 30 seconds, then `202` with job details |
+| `/health` / `/ready` | liveness / PostgreSQL, Redis, storage configuration and loaded-worker readiness |
+| `/metrics` | request/error/latency metrics |
+
+PostgreSQL `deepfake_jobs` stores hashed capabilities, content/version cache keys, result/error metadata, retry schedule, worker lease and cleanup state. Indexes cover content hash, status and model/preprocessing version. Admission uses a transaction advisory lock so separate requests cannot exceed the queue bound. Redis dispatch is a fast path: reconciliation also finds committed jobs after enqueue failure or worker restart. Leases and fenced writes prevent an old worker from overwriting its successor.
+
+The default admission ceiling is 20 outstanding jobs, one active inference, and a 300-second subprocess timeout. Saturation returns `429` with `Retry-After`. Storage/network failures retry at most three attempts with backoff; corrupt media, deterministic model errors and inference timeouts are terminal failures. Worker death kills its inference child; restart removes abandoned scratch directories. Terminal upload cleanup is retried after storage failure. Originals are removed after inference; durable results remain cached by content hash plus model/preprocessing versions.
+
+Validation preserves the 100 MB upload ceiling, checks extension/MIME/signature, and rejects undecodable media, more than 4K pixels, 18,000 frames or 600 seconds. The existing seek-to-frame fallback and label mapping remain intact. Sampled frames are resized with the original `INTER_AREA` operation before retention: ten 4K frames require approximately 1.5 MB after resizing, instead of 249 MB. Numerical preprocessing tests verify exact equality; this is memory control, not an accuracy improvement.
+
+## Verification and measured results
+
+Run `cd backend && python -m pytest tests -q`. Set an explicit isolated `SDE_TEST_DATABASE_URL` ending in `_test`, the same `DATABASE_URL`, and disposable Redis to include the real ledger tests. The full locally installed runtime passes **14 tests**, including upload validation, corrupt/oversized input, capabilities, queue saturation, enqueue/restart recovery, temporary cleanup, killable timeouts, model sampling and the total-memory gate. CI uses real PostgreSQL/Redis and lightweight provider fixtures; real-model verification remains separate.
+
+| Native Windows, sequential inference, 100 synthetic requests | Original service | Initial async worker |
+|---|---:|---:|
+| Warm p50 / p95 (s) | 1.626 / 1.830 | 1.247 / 1.436 |
+| Completed inference/s | 0.602 | 0.782 |
+| Cold model load (s) | 7.603 | 7.437 |
+| Process-group RSS (MB) | 496 | 586 |
+| Failures | 0 | 0 |
+
+[Baseline](artifacts/baseline-native.json) and [worker](artifacts/upgraded-native.json) use the documented 50-video synthetic corpus. They exclude uploads, database/Redis queue wait, cache and provider wake-up. Summed native RSS can double-count shared pages and is not container memory. These earlier timings precede the final resize/cache configuration.
+
+The adopted CPU settings are `ONEDNN_PRIMITIVE_CACHE_CAPACITY=0`, `DNNL_PRIMITIVE_CACHE_CAPACITY=0`, and `MALLOC_ARENA_MAX=2`, with one Torch thread and one-frame inference batches. [Linux PyTorch parity](artifacts/cpu-cache-parity.json) records 50/50 unchanged labels and maximum probability difference **0.0**. Original PyTorch weights, FFT features and preprocessing remain unchanged; no ONNX conversion was adopted.
+
+| 512 MB container, 100 requests | 4 clients | 30 clients, fresh ledger |
+|---|---:|---:|
+| Completed jobs | 100 | 100 |
+| Fresh jobs / cache hits | 52 / 48 | 63 / 37 |
+| Peak total cgroup memory (MB) | 388.3 | 389.7 |
+| OOM events | 0 | 0 |
+| Backpressure responses, retried by clients | 0 | 224 |
+| Upload acknowledgement p95 (s) | 0.096 | 2.174 |
+| Fresh completion p95 incl. queue wait (s) | 11.39 | 325.11 |
+| Cache-hit completion p50 (s) | 0.043 | 0.143 |
+
+[Four-client report](artifacts/container-512m-no-primitive-cache.json), [fresh burst](artifacts/container-512m-no-primitive-cache-fresh-burst.json). The burst shared host CPU with separate numerical and Sehat experiments, so its latency is an observed constrained-host result, not a clean performance comparison. Both enforce 512 MB with no swap and include total `memory.peak`, not just anonymous RSS. The separate [cache-only burst](artifacts/container-512m-no-primitive-cache-saturation.json) had zero fresh inferences and is excluded from capacity evidence. The older default-cache configuration failed the 400 MB gate; it is retained as baseline evidence.
+
+Reproduce with `backend/scripts/container_bench.py --image <built image> --memory 512m --requests 100 --concurrency 30 --database-url <fresh disposable *_bench database> --redis-url <disposable Redis> --output <report>`. Use a new database for an inference run; repeated workloads measure cache hits. `scripts/check_capacity.py` requires at least 100 successful requests, at least 50 fresh jobs, total peak below 400,000,000 bytes and zero OOM events. Image size is approximately 2.71 GB uncompressed. The narrow synthetic corpus does not establish a worst-case memory ceiling for every supported codec/video resolution.
+
+Unfused float32 ONNX still failed the 0.001 parity gate: the Linux 50-input comparison reached approximately 0.00348 maximum probability difference, with unchanged labels. Those artifacts are numerical verification only. The serving runtime remains PyTorch.
+
+| Status | Evidence |
+|---|---|
+| Implemented | durable jobs, private uploads, capabilities, single inference subprocess, retries/recovery/backpressure, cleanup, polling frontend, Docker/CI and metrics |
+| Measured locally | 14 tests; original-model comparisons; 100-request resource runs below 400 MB; 50-video CPU-setting parity |
+| Verified live | upgrade rollout pending isolated Supabase database/storage configuration and frontend connection; existing demo links do not yet prove the async upgrade |
 
 ## Technology stack
 
@@ -249,6 +304,9 @@ PYTHON_VERSION=3.11.11
 FRONTEND_ORIGINS=https://deepfake-ten-psi.vercel.app
 TORCH_NUM_THREADS=1
 INFERENCE_BATCH_SIZE=1
+ONEDNN_PRIMITIVE_CACHE_CAPACITY=0
+DNNL_PRIMITIVE_CACHE_CAPACITY=0
+MALLOC_ARENA_MAX=2
 ```
 
 Build command:

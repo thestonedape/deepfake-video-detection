@@ -29,6 +29,7 @@ parser.add_argument('--port', type=int, default=8011)
 parser.add_argument('--database-url', required=True)
 parser.add_argument('--redis-url', required=True)
 parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--env', action='append', default=[], help='Additional non-secret runtime NAME=value settings')
 args = parser.parse_args()
 if not args.database_url.rsplit('/', 1)[-1].endswith(('_test', '_bench')):
     raise SystemExit('benchmark requires a disposable *_test or *_bench database')
@@ -48,6 +49,12 @@ def cgroup(file):
 
 env = ['-e', f'DATABASE_URL={args.database_url}', '-e', f'REDIS_URL={args.redis_url}', '-e', 'ENVIRONMENT=development',
        '-e', 'LOCAL_STORAGE_DIR=/app/storage', '-e', 'MAX_QUEUED_JOBS=20']
+for setting in args.env:
+    if '=' not in setting or setting.split('=', 1)[0] not in {
+        'ONEDNN_PRIMITIVE_CACHE_CAPACITY', 'DNNL_PRIMITIVE_CACHE_CAPACITY', 'MALLOC_ARENA_MAX'
+    }:
+        raise SystemExit('Only supported non-secret resource settings may be benchmarked')
+    env.extend(['-e', setting])
 subprocess.run(['docker', 'run', '--rm', *env, args.image, 'python', 'scripts/migrate.py'], check=True, capture_output=True)
 docker('rm', '-f', name, check=False)
 started = time.perf_counter()
@@ -137,6 +144,7 @@ report = {
     'scope': f'Docker Desktop (WSL2), one supervised API+arq worker container, --memory {args.memory} no swap; '
              'real model; local storage; synthetic 10-frame 64x64 MJPEG videos (not accuracy evidence)',
     'image': args.image, 'image_bytes': image_bytes, 'memory_limit': args.memory,
+    'runtime_settings': args.env,
     'cold_start_to_ready_seconds': cold, 'requests': len(results), 'client_concurrency': args.concurrency,
     'outcomes': {o: sum(x['outcome'] == o for x in results) for o in {x['outcome'] for x in results}},
     'backpressure_429_responses': sum(x.get('backpressure_429s', 0) for x in results),

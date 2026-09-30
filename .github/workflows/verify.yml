@@ -34,5 +34,5 @@ jobs:
         env:
           DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          if [ -n "$DEPLOY_HOOK" ]; then python backend/scripts/check_capacity.py artifacts/container-512m.json; fi
+          if [ -n "$DEPLOY_HOOK" ]; then python backend/scripts/check_capacity.py artifacts/container-512m-no-primitive-cache-fresh-burst.json; fi
           if [ -n "$DEPLOY_HOOK" ]; then curl --fail --silent --show-error -X POST "$DEPLOY_HOOK"; else echo 'No deployment hook configured; deployment not triggered.'; fi

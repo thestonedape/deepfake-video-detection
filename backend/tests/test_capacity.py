@@ -15,3 +15,11 @@ def test_total_container_memory_required():
     assert not capacity.validate(report)
     del report["peak_cgroup_memory_bytes"]
     assert not capacity.validate(report)
+
+def test_cache_only_load_does_not_validate_inference_capacity():
+    report = {'memory_limit': '512m', 'requests': 100, 'outcomes': {'completed': 100},
+              'fresh_jobs': 0, 'peak_cgroup_memory_bytes': 350_000_000,
+              'oom_kill_events': 0, 'container_oom_killed': False}
+    assert not capacity.validate(report)
+    report['fresh_jobs'] = 50
+    assert capacity.validate(report)

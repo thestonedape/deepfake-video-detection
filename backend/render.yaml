@@ -16,3 +16,9 @@ services:
         value: "1"
       - key: INFERENCE_BATCH_SIZE
         value: "1"
+      - key: ONEDNN_PRIMITIVE_CACHE_CAPACITY
+        value: "0"
+      - key: DNNL_PRIMITIVE_CACHE_CAPACITY
+        value: "0"
+      - key: MALLOC_ARENA_MAX
+        value: "2"

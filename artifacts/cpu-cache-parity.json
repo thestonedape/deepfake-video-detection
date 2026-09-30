@@ -1,0 +1,885 @@
+{
+  "scope": "Numerical verification only, not accuracy evidence; original PyTorch runtime and weights retained",
+  "corpus": "50 synthetic 10-frame 64x64 MJPEG AVI videos, NumPy seed 7300930",
+  "runtime_settings": {
+    "ONEDNN_PRIMITIVE_CACHE_CAPACITY": "0",
+    "DNNL_PRIMITIVE_CACHE_CAPACITY": "0",
+    "MALLOC_ARENA_MAX": "2"
+  },
+  "model_sha256": "1bdb710834262826666c776e4a80662ae13c196c16a1eff9b16976ffa2abe178",
+  "torch_version": "2.6.0+cpu",
+  "corpus_sha256": [
+    "a13aab1968590ba5c15e85ef04d7355899752e3159cdf57cc925abeda4372b80",
+    "82505b699b72cbd358326d4f014df3503f0f76509d594538abbbfa0ceafa5911",
+    "5eb0128376eb73caf73d3de36e4a65cf54bf4a54ee8f5e89d5368bd629b0eb0b",
+    "0f736fa2e08b65a98dabd9d55869beab9bcf85854a6a2b53ef574b5881de5704",
+    "2e06eeacd13f2c0573499064dc20c441e5aa431963fd15f959133442a89d96e1",
+    "b95355b4c724e9a7a938ad1b5cf83cb360a4c8c55f6d4dba27c816c40cce0f3f",
+    "2885948965344e73f10bd56a2fa5c6e7196bcde2c206f2ff872ef96cec30ab14",
+    "20f724f1a76d71735d8a6fe39f66c5dfb17ba656d41672488ca3e2ddf7085acb",
+    "e2b84939f5fea35c6111707dee4f169e868243f55490f68787082e03f9d52f0c",
+    "e2a8bba2359b182eec5da7780f94e496fb3fdaec60377ce5687dfafc31145e2f",
+    "7309d14a68364852697d326d796286cfe0d4777edf1949076d20fdb7230b2e67",
+    "84d1d7a1d703d5e0add76ebd0fa583ea55ff2e0bbf9c7b972f8d7b1dfb9217af",
+    "2f201d71abf39f7416dd7f43854288ea89bdd4c94a6244ee7c5446cf5e238884",
+    "a530d1aff2e5eb8d472e590b9b79c880d7cc7e79c05a0d2832b7f4addbaedbc7",
+    "656fd7c8e1415202708e8cea3bf89689ad37950293c36f86fccc2dcedbcf722c",
+    "2e90f888a7f7c616362cf857ec08a73b870f08fe217fbec66f1ab4d6f2f25e3c",
+    "341fe939807c964eda931905c9af5c14d89a94c3ce4577488a26a25af9ac2e43",
+    "18cf18a5a99c4705859393b27151575ab10b04e1596a676c606b95b3e12eb9fa",
+    "15b649dbbf27d7674e7748e5306c081b658929b1ab8c11d0e55bd8f4b934cb90",
+    "47bb8f28cd1994f01c45b871d47b1e8ec6021d6dc0e9f64d940a267c317cf422",
+    "ab9f8b487891f52c1ceff3eeaab27bbedeb78fd6ba385144ca0a17b9fe0eda00",
+    "ae92989c949350e7238376ee6449f17b9060f8045c5993506ba9ba99ac6de476",
+    "525d995765d0c94730af24b49a78004de446b1daf271c4d995de98b10c2e2ce7",
+    "c3560263a3519625084196b640d6c1ec6b5d7771ff7a803801e79ba0ac388a8e",
+    "64af583c6ace2db6a1b40f0e52c842f1d90fb0783eb93f6cec7a936e1fc63be6",
+    "a2b44efdb53c638e6ed8323350b7723bd272dffb982b622632b013268c091f23",
+    "6918124c5fe24abebcfa327b15263d5aae372d29d7e7a445948d5978352913d3",
+    "b29e32c9ae026cf9d36ec00dafb128192456286630917f549fc3af959f02eabe",
+    "9300b023cc566662c9f119a8c37f1e79065bd818aaed0bc3274cf570d6649bbb",
+    "45ac6ece7c74675cafefc7c09942b601aabc3113d844b34fc5855159c420fcec",
+    "1b3270f3eacc1c9709f767f910667e9777f7399aa1978d7f8adf4635a61c3c94",
+    "a0f6e11da9ba9fbd85de3c688a4111961603afc4a8e218176d23bce86802e658",
+    "6415cd16630d5aaedfbdb8c442f1ac56e06a7b79ca637350b7c6bbaa339eceb8",
+    "64607f33595c238bb5424a2e5786da7fa515ec976713cdb3a48f9ebc25b9940e",
+    "69ef8c4ef95aced94c47d3613900401a4acc9584bf602b324884000ffa88ead2",
+    "e9a04fcba9adfd0cb7973e81cec51fa42d10a945a2fe21448e2b14b757b0ddb2",
+    "25f44476e8ecd4d8f1c5f904cbf740022f0986e9cf014ac97fecd63c45cd0069",
+    "8af57521fb19fc734ac232359e23952784a7c3fd2167a2c90a8655687032b70a",
+    "eb53eb56199d7e8e32952ddef47edc33ac5525ecca16a51fa37f931d007d6f76",
+    "5d788b2f29afb7514cbd6417cf87937c84f70ae2787f70fed9ade98dec32d5d0",
+    "d967cce5f452a3813d019dc492e9d4a7094c9b3340c99095f76bb969283b8ed5",
+    "75e21fe6af27f87b8900d4b553eeeb0247bc9bc2a23b32e44272362054ab4eb8",
+    "01fc7209c2328bf3162ecefba563311251b92087467861918ca6e7de0793cd16",
+    "e368e10c4e497edc3caaa3d0e986bd7a04396cecdba66b41dcda134685be7597",
+    "79accdddda3906252cea14ab3fe58a7a6cdb868ccfc8ea0bd8c5f027a7b70373",
+    "7e57107d5b446454a063ca861914c37b954c1913362365853c2098ed37f9d154",
+    "c61887f033b0bf1c61c8ff5d5bebc3668277bf7b0acedea04e1dc77e8c755b3f",
+    "45982006a6b40b727377e8358aa3be6dcb0f04674d1800ed62cfa808d082b195",
+    "08c65465fea91ac070134ce9f127b47096f823ccdb6cc349f36351081688242a",
+    "a353cd9b78e3447debf4451aee3be48b3964c7602ef2dd92a2eef40a6af27a5e"
+  ],
+  "inputs": 50,
+  "unchanged_labels": 50,
+  "max_absolute_probability_difference": 0.0,
+  "results": {
+    "default": {
+      "results": [
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5735669732093811,
+            "real": 0.4264330267906189
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5371417999267578,
+            "real": 0.4628582000732422
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5491393804550171,
+            "real": 0.4508605897426605
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5339239835739136,
+            "real": 0.4660760462284088
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5644192695617676,
+            "real": 0.4355807304382324
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5664547085762024,
+            "real": 0.4335452616214752
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5757008790969849,
+            "real": 0.42429909110069275
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5670312643051147,
+            "real": 0.43296876549720764
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6099772453308105,
+            "real": 0.39002278447151184
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5990142822265625,
+            "real": 0.4009857177734375
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6151294112205505,
+            "real": 0.38487058877944946
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5557759404182434,
+            "real": 0.44422397017478943
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6238582134246826,
+            "real": 0.37614184617996216
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5931721329689026,
+            "real": 0.4068278670310974
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5825089812278748,
+            "real": 0.4174911081790924
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5902517437934875,
+            "real": 0.4097483158111572
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5654679536819458,
+            "real": 0.4345320761203766
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5850091576576233,
+            "real": 0.4149909019470215
+          }
+        },
+        {
+          "label": "real",
+          "probabilities": {
+            "fake": 0.49643534421920776,
+            "real": 0.5035646557807922
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6108658313751221,
+            "real": 0.38913413882255554
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5845381021499634,
+            "real": 0.41546186804771423
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.571221113204956,
+            "real": 0.42877882719039917
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5834503173828125,
+            "real": 0.4165496826171875
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5361935496330261,
+            "real": 0.4638063907623291
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5711339712142944,
+            "real": 0.42886605858802795
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.603721022605896,
+            "real": 0.3962790071964264
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5710512399673462,
+            "real": 0.4289488196372986
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5820774435997009,
+            "real": 0.4179224967956543
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5141099691390991,
+            "real": 0.48589006066322327
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5325210094451904,
+            "real": 0.46747905015945435
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6015194058418274,
+            "real": 0.3984806537628174
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.571285605430603,
+            "real": 0.42871445417404175
+          }
+        },
+        {
+          "label": "real",
+          "probabilities": {
+            "fake": 0.49757617712020874,
+            "real": 0.5024238228797913
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5759574174880981,
+            "real": 0.42404255270957947
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.616919994354248,
+            "real": 0.38308000564575195
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.590927004814148,
+            "real": 0.4090729355812073
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5721178650856018,
+            "real": 0.4278821349143982
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5244654417037964,
+            "real": 0.47553449869155884
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5344951152801514,
+            "real": 0.46550482511520386
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5921105742454529,
+            "real": 0.4078894257545471
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5816627740859985,
+            "real": 0.4183371961116791
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5724188089370728,
+            "real": 0.42758116126060486
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5974366068840027,
+            "real": 0.4025633931159973
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5532236099243164,
+            "real": 0.4467763900756836
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5880700349807739,
+            "real": 0.41192999482154846
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5185217261314392,
+            "real": 0.4814782738685608
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6495919823646545,
+            "real": 0.35040798783302307
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6528667211532593,
+            "real": 0.34713324904441833
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5841103196144104,
+            "real": 0.4158897399902344
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5251733064651489,
+            "real": 0.47482672333717346
+          }
+        }
+      ],
+      "corpus_sha256": [
+        "a13aab1968590ba5c15e85ef04d7355899752e3159cdf57cc925abeda4372b80",
+        "82505b699b72cbd358326d4f014df3503f0f76509d594538abbbfa0ceafa5911",
+        "5eb0128376eb73caf73d3de36e4a65cf54bf4a54ee8f5e89d5368bd629b0eb0b",
+        "0f736fa2e08b65a98dabd9d55869beab9bcf85854a6a2b53ef574b5881de5704",
+        "2e06eeacd13f2c0573499064dc20c441e5aa431963fd15f959133442a89d96e1",
+        "b95355b4c724e9a7a938ad1b5cf83cb360a4c8c55f6d4dba27c816c40cce0f3f",
+        "2885948965344e73f10bd56a2fa5c6e7196bcde2c206f2ff872ef96cec30ab14",
+        "20f724f1a76d71735d8a6fe39f66c5dfb17ba656d41672488ca3e2ddf7085acb",
+        "e2b84939f5fea35c6111707dee4f169e868243f55490f68787082e03f9d52f0c",
+        "e2a8bba2359b182eec5da7780f94e496fb3fdaec60377ce5687dfafc31145e2f",
+        "7309d14a68364852697d326d796286cfe0d4777edf1949076d20fdb7230b2e67",
+        "84d1d7a1d703d5e0add76ebd0fa583ea55ff2e0bbf9c7b972f8d7b1dfb9217af",
+        "2f201d71abf39f7416dd7f43854288ea89bdd4c94a6244ee7c5446cf5e238884",
+        "a530d1aff2e5eb8d472e590b9b79c880d7cc7e79c05a0d2832b7f4addbaedbc7",
+        "656fd7c8e1415202708e8cea3bf89689ad37950293c36f86fccc2dcedbcf722c",
+        "2e90f888a7f7c616362cf857ec08a73b870f08fe217fbec66f1ab4d6f2f25e3c",
+        "341fe939807c964eda931905c9af5c14d89a94c3ce4577488a26a25af9ac2e43",
+        "18cf18a5a99c4705859393b27151575ab10b04e1596a676c606b95b3e12eb9fa",
+        "15b649dbbf27d7674e7748e5306c081b658929b1ab8c11d0e55bd8f4b934cb90",
+        "47bb8f28cd1994f01c45b871d47b1e8ec6021d6dc0e9f64d940a267c317cf422",
+        "ab9f8b487891f52c1ceff3eeaab27bbedeb78fd6ba385144ca0a17b9fe0eda00",
+        "ae92989c949350e7238376ee6449f17b9060f8045c5993506ba9ba99ac6de476",
+        "525d995765d0c94730af24b49a78004de446b1daf271c4d995de98b10c2e2ce7",
+        "c3560263a3519625084196b640d6c1ec6b5d7771ff7a803801e79ba0ac388a8e",
+        "64af583c6ace2db6a1b40f0e52c842f1d90fb0783eb93f6cec7a936e1fc63be6",
+        "a2b44efdb53c638e6ed8323350b7723bd272dffb982b622632b013268c091f23",
+        "6918124c5fe24abebcfa327b15263d5aae372d29d7e7a445948d5978352913d3",
+        "b29e32c9ae026cf9d36ec00dafb128192456286630917f549fc3af959f02eabe",
+        "9300b023cc566662c9f119a8c37f1e79065bd818aaed0bc3274cf570d6649bbb",
+        "45ac6ece7c74675cafefc7c09942b601aabc3113d844b34fc5855159c420fcec",
+        "1b3270f3eacc1c9709f767f910667e9777f7399aa1978d7f8adf4635a61c3c94",
+        "a0f6e11da9ba9fbd85de3c688a4111961603afc4a8e218176d23bce86802e658",
+        "6415cd16630d5aaedfbdb8c442f1ac56e06a7b79ca637350b7c6bbaa339eceb8",
+        "64607f33595c238bb5424a2e5786da7fa515ec976713cdb3a48f9ebc25b9940e",
+        "69ef8c4ef95aced94c47d3613900401a4acc9584bf602b324884000ffa88ead2",
+        "e9a04fcba9adfd0cb7973e81cec51fa42d10a945a2fe21448e2b14b757b0ddb2",
+        "25f44476e8ecd4d8f1c5f904cbf740022f0986e9cf014ac97fecd63c45cd0069",
+        "8af57521fb19fc734ac232359e23952784a7c3fd2167a2c90a8655687032b70a",
+        "eb53eb56199d7e8e32952ddef47edc33ac5525ecca16a51fa37f931d007d6f76",
+        "5d788b2f29afb7514cbd6417cf87937c84f70ae2787f70fed9ade98dec32d5d0",
+        "d967cce5f452a3813d019dc492e9d4a7094c9b3340c99095f76bb969283b8ed5",
+        "75e21fe6af27f87b8900d4b553eeeb0247bc9bc2a23b32e44272362054ab4eb8",
+        "01fc7209c2328bf3162ecefba563311251b92087467861918ca6e7de0793cd16",
+        "e368e10c4e497edc3caaa3d0e986bd7a04396cecdba66b41dcda134685be7597",
+        "79accdddda3906252cea14ab3fe58a7a6cdb868ccfc8ea0bd8c5f027a7b70373",
+        "7e57107d5b446454a063ca861914c37b954c1913362365853c2098ed37f9d154",
+        "c61887f033b0bf1c61c8ff5d5bebc3668277bf7b0acedea04e1dc77e8c755b3f",
+        "45982006a6b40b727377e8358aa3be6dcb0f04674d1800ed62cfa808d082b195",
+        "08c65465fea91ac070134ce9f127b47096f823ccdb6cc349f36351081688242a",
+        "a353cd9b78e3447debf4451aee3be48b3964c7602ef2dd92a2eef40a6af27a5e"
+      ],
+      "model_sha256": "1bdb710834262826666c776e4a80662ae13c196c16a1eff9b16976ffa2abe178",
+      "torch_version": "2.6.0+cpu"
+    },
+    "bounded": {
+      "results": [
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5735669732093811,
+            "real": 0.4264330267906189
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5371417999267578,
+            "real": 0.4628582000732422
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5491393804550171,
+            "real": 0.4508605897426605
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5339239835739136,
+            "real": 0.4660760462284088
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5644192695617676,
+            "real": 0.4355807304382324
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5664547085762024,
+            "real": 0.4335452616214752
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5757008790969849,
+            "real": 0.42429909110069275
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5670312643051147,
+            "real": 0.43296876549720764
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6099772453308105,
+            "real": 0.39002278447151184
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5990142822265625,
+            "real": 0.4009857177734375
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6151294112205505,
+            "real": 0.38487058877944946
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5557759404182434,
+            "real": 0.44422397017478943
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6238582134246826,
+            "real": 0.37614184617996216
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5931721329689026,
+            "real": 0.4068278670310974
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5825089812278748,
+            "real": 0.4174911081790924
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5902517437934875,
+            "real": 0.4097483158111572
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5654679536819458,
+            "real": 0.4345320761203766
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5850091576576233,
+            "real": 0.4149909019470215
+          }
+        },
+        {
+          "label": "real",
+          "probabilities": {
+            "fake": 0.49643534421920776,
+            "real": 0.5035646557807922
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6108658313751221,
+            "real": 0.38913413882255554
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5845381021499634,
+            "real": 0.41546186804771423
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.571221113204956,
+            "real": 0.42877882719039917
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5834503173828125,
+            "real": 0.4165496826171875
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5361935496330261,
+            "real": 0.4638063907623291
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5711339712142944,
+            "real": 0.42886605858802795
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.603721022605896,
+            "real": 0.3962790071964264
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5710512399673462,
+            "real": 0.4289488196372986
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5820774435997009,
+            "real": 0.4179224967956543
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5141099691390991,
+            "real": 0.48589006066322327
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5325210094451904,
+            "real": 0.46747905015945435
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6015194058418274,
+            "real": 0.3984806537628174
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.571285605430603,
+            "real": 0.42871445417404175
+          }
+        },
+        {
+          "label": "real",
+          "probabilities": {
+            "fake": 0.49757617712020874,
+            "real": 0.5024238228797913
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5759574174880981,
+            "real": 0.42404255270957947
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.616919994354248,
+            "real": 0.38308000564575195
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.590927004814148,
+            "real": 0.4090729355812073
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5721178650856018,
+            "real": 0.4278821349143982
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5244654417037964,
+            "real": 0.47553449869155884
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5344951152801514,
+            "real": 0.46550482511520386
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5921105742454529,
+            "real": 0.4078894257545471
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5816627740859985,
+            "real": 0.4183371961116791
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5724188089370728,
+            "real": 0.42758116126060486
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5974366068840027,
+            "real": 0.4025633931159973
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5532236099243164,
+            "real": 0.4467763900756836
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5880700349807739,
+            "real": 0.41192999482154846
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5185217261314392,
+            "real": 0.4814782738685608
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6495919823646545,
+            "real": 0.35040798783302307
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.6528667211532593,
+            "real": 0.34713324904441833
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5841103196144104,
+            "real": 0.4158897399902344
+          }
+        },
+        {
+          "label": "fake",
+          "probabilities": {
+            "fake": 0.5251733064651489,
+            "real": 0.47482672333717346
+          }
+        }
+      ],
+      "corpus_sha256": [
+        "a13aab1968590ba5c15e85ef04d7355899752e3159cdf57cc925abeda4372b80",
+        "82505b699b72cbd358326d4f014df3503f0f76509d594538abbbfa0ceafa5911",
+        "5eb0128376eb73caf73d3de36e4a65cf54bf4a54ee8f5e89d5368bd629b0eb0b",
+        "0f736fa2e08b65a98dabd9d55869beab9bcf85854a6a2b53ef574b5881de5704",
+        "2e06eeacd13f2c0573499064dc20c441e5aa431963fd15f959133442a89d96e1",
+        "b95355b4c724e9a7a938ad1b5cf83cb360a4c8c55f6d4dba27c816c40cce0f3f",
+        "2885948965344e73f10bd56a2fa5c6e7196bcde2c206f2ff872ef96cec30ab14",
+        "20f724f1a76d71735d8a6fe39f66c5dfb17ba656d41672488ca3e2ddf7085acb",
+        "e2b84939f5fea35c6111707dee4f169e868243f55490f68787082e03f9d52f0c",
+        "e2a8bba2359b182eec5da7780f94e496fb3fdaec60377ce5687dfafc31145e2f",
+        "7309d14a68364852697d326d796286cfe0d4777edf1949076d20fdb7230b2e67",
+        "84d1d7a1d703d5e0add76ebd0fa583ea55ff2e0bbf9c7b972f8d7b1dfb9217af",
+        "2f201d71abf39f7416dd7f43854288ea89bdd4c94a6244ee7c5446cf5e238884",
+        "a530d1aff2e5eb8d472e590b9b79c880d7cc7e79c05a0d2832b7f4addbaedbc7",
+        "656fd7c8e1415202708e8cea3bf89689ad37950293c36f86fccc2dcedbcf722c",
+        "2e90f888a7f7c616362cf857ec08a73b870f08fe217fbec66f1ab4d6f2f25e3c",
+        "341fe939807c964eda931905c9af5c14d89a94c3ce4577488a26a25af9ac2e43",
+        "18cf18a5a99c4705859393b27151575ab10b04e1596a676c606b95b3e12eb9fa",
+        "15b649dbbf27d7674e7748e5306c081b658929b1ab8c11d0e55bd8f4b934cb90",
+        "47bb8f28cd1994f01c45b871d47b1e8ec6021d6dc0e9f64d940a267c317cf422",
+        "ab9f8b487891f52c1ceff3eeaab27bbedeb78fd6ba385144ca0a17b9fe0eda00",
+        "ae92989c949350e7238376ee6449f17b9060f8045c5993506ba9ba99ac6de476",
+        "525d995765d0c94730af24b49a78004de446b1daf271c4d995de98b10c2e2ce7",
+        "c3560263a3519625084196b640d6c1ec6b5d7771ff7a803801e79ba0ac388a8e",
+        "64af583c6ace2db6a1b40f0e52c842f1d90fb0783eb93f6cec7a936e1fc63be6",
+        "a2b44efdb53c638e6ed8323350b7723bd272dffb982b622632b013268c091f23",
+        "6918124c5fe24abebcfa327b15263d5aae372d29d7e7a445948d5978352913d3",
+        "b29e32c9ae026cf9d36ec00dafb128192456286630917f549fc3af959f02eabe",
+        "9300b023cc566662c9f119a8c37f1e79065bd818aaed0bc3274cf570d6649bbb",
+        "45ac6ece7c74675cafefc7c09942b601aabc3113d844b34fc5855159c420fcec",
+        "1b3270f3eacc1c9709f767f910667e9777f7399aa1978d7f8adf4635a61c3c94",
+        "a0f6e11da9ba9fbd85de3c688a4111961603afc4a8e218176d23bce86802e658",
+        "6415cd16630d5aaedfbdb8c442f1ac56e06a7b79ca637350b7c6bbaa339eceb8",
+        "64607f33595c238bb5424a2e5786da7fa515ec976713cdb3a48f9ebc25b9940e",
+        "69ef8c4ef95aced94c47d3613900401a4acc9584bf602b324884000ffa88ead2",
+        "e9a04fcba9adfd0cb7973e81cec51fa42d10a945a2fe21448e2b14b757b0ddb2",
+        "25f44476e8ecd4d8f1c5f904cbf740022f0986e9cf014ac97fecd63c45cd0069",
+        "8af57521fb19fc734ac232359e23952784a7c3fd2167a2c90a8655687032b70a",
+        "eb53eb56199d7e8e32952ddef47edc33ac5525ecca16a51fa37f931d007d6f76",
+        "5d788b2f29afb7514cbd6417cf87937c84f70ae2787f70fed9ade98dec32d5d0",
+        "d967cce5f452a3813d019dc492e9d4a7094c9b3340c99095f76bb969283b8ed5",
+        "75e21fe6af27f87b8900d4b553eeeb0247bc9bc2a23b32e44272362054ab4eb8",
+        "01fc7209c2328bf3162ecefba563311251b92087467861918ca6e7de0793cd16",
+        "e368e10c4e497edc3caaa3d0e986bd7a04396cecdba66b41dcda134685be7597",
+        "79accdddda3906252cea14ab3fe58a7a6cdb868ccfc8ea0bd8c5f027a7b70373",
+        "7e57107d5b446454a063ca861914c37b954c1913362365853c2098ed37f9d154",
+        "c61887f033b0bf1c61c8ff5d5bebc3668277bf7b0acedea04e1dc77e8c755b3f",
+        "45982006a6b40b727377e8358aa3be6dcb0f04674d1800ed62cfa808d082b195",
+        "08c65465fea91ac070134ce9f127b47096f823ccdb6cc349f36351081688242a",
+        "a353cd9b78e3447debf4451aee3be48b3964c7602ef2dd92a2eef40a6af27a5e"
+      ],
+      "model_sha256": "1bdb710834262826666c776e4a80662ae13c196c16a1eff9b16976ffa2abe178",
+      "torch_version": "2.6.0+cpu"
+    }
+  },
+  "passed": true
+}
