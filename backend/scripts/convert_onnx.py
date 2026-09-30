@@ -2,6 +2,7 @@
 Synthetic corpus verifies numerical behavior, never detector accuracy.
 """
 import hashlib
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -35,15 +36,20 @@ class ExportNetwork(torch.nn.Module):
         return self.model.classifier(torch.cat([spatial,self.model.frequency_mlp(frequency)],dim=1))
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--unfused',action='store_true',help='Disable exporter constant folding and ORT graph optimizations')
+    args=parser.parse_args()
+    suffix='-unfused' if args.unfused else ''
     out=root.parent/'artifacts';out.mkdir(exist_ok=True)
     service=DeepfakeService(root/'best_model.pt')
     wrapper=ExportNetwork(service.model).eval()
-    report={'adopted':False,'corpus':'50 synthetic normalized 224x224 RGB frame inputs, seed 7300930; numerical verification only','labels':{'0':'fake','1':'real'}}
+    report={'adopted':False,'torch_version':torch.__version__,'onnxruntime_version':ort.__version__,'unfused':args.unfused,'corpus':'50 synthetic normalized 224x224 RGB frame inputs, seed 7300930; numerical verification only','labels':{'0':'fake','1':'real'}}
     try:
         example=torch.zeros(1,3,224,224)
-        torch.onnx.export(wrapper,(example,extract_frequency_features(example)),str(out/'detector.onnx'),input_names=['images','frequency'],output_names=['logits'],opset_version=17,dynamo=False)
+        torch.onnx.export(wrapper,(example,extract_frequency_features(example)),str(out/f'detector{suffix}.onnx'),input_names=['images','frequency'],output_names=['logits'],opset_version=17,dynamo=False,do_constant_folding=not args.unfused)
         options=ort.SessionOptions();options.intra_op_num_threads=1;options.inter_op_num_threads=1
-        runtime=ort.InferenceSession(str(out/'detector.onnx'),sess_options=options,providers=['CPUExecutionProvider'])
+        if args.unfused: options.graph_optimization_level=ort.GraphOptimizationLevel.ORT_DISABLE_ALL
+        runtime=ort.InferenceSession(str(out/f'detector{suffix}.onnx'),sess_options=options,providers=['CPUExecutionProvider'])
         rng=np.random.default_rng(7300930);differences=[];labels=[];freqdiff=[];hashes=[]
         with torch.inference_mode():
             for index in range(50):
@@ -58,9 +64,9 @@ def main():
                 differences.append(float(np.abs(original-actual).max()))
                 labels.append(bool(original.argmax()==actual.argmax()))
                 freqdiff.append(float(np.abs(extract_frequency_features(torch.from_numpy(images)).numpy()-frequency).max()))
-        report.update({'passed':all(labels) and max(differences)<=.001,'unchanged_labels':sum(labels),'maximum_absolute_probability_difference':max(differences),'raw_max_probability_differences':differences,'maximum_frequency_feature_difference':max(freqdiff),'corpus_sha256':hashes,'onnx_bytes':(out/'detector.onnx').stat().st_size,'promotion_gate':'Frame-level numerical checks alone do not prove video-level parity or memory improvement; PyTorch remains serving runtime.'})
+        report.update({'passed':all(labels) and max(differences)<=.001,'unchanged_labels':sum(labels),'maximum_absolute_probability_difference':max(differences),'raw_max_probability_differences':differences,'maximum_frequency_feature_difference':max(freqdiff),'corpus_sha256':hashes,'onnx_bytes':(out/f'detector{suffix}.onnx').stat().st_size,'promotion_gate':'Frame-level numerical checks alone do not prove video-level parity or memory improvement; PyTorch remains serving runtime.'})
     except Exception as exc: report.update({'passed':False,'error_type':type(exc).__name__,'error':str(exc)[:2000]})
-    (out/'onnx-verification.json').write_text(json.dumps(report,indent=2))
+    (out/f'onnx{suffix}-verification.json').write_text(json.dumps(report,indent=2))
     print(json.dumps({k:v for k,v in report.items() if not isinstance(v,list)}))
 
 if __name__=='__main__':main()
