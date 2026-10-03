@@ -165,10 +165,12 @@ function Home({ navigate }: { navigate: (path: AppPath) => void }) {
 function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
   const raw = sessionStorage.getItem('veriframe:lastResult');
   const prediction = raw ? (JSON.parse(raw) as PredictionResponse) : null;
-  if (!prediction) {
-    useEffect(() => navigate('/analyze'), [navigate]);
-    return null;
-  }
+
+  useEffect(() => {
+    if (!prediction) navigate('/analyze');
+  }, [prediction, navigate]);
+
+  if (!prediction) return null;
   const isFake = prediction.predicted_label === 'fake';
   return (
     <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
