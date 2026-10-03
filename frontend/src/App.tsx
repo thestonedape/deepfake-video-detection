@@ -175,8 +175,9 @@ function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
   if (!prediction) return null;
   const isFake = prediction.predicted_label === 'fake';
 
+  const result = prediction;
+
   async function copyResult() {
-    const result = prediction;
     const summary = [
       'VeriFrame analysis result',
       `File: ${result.filename}`,
