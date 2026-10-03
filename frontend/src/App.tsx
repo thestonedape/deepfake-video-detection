@@ -3,6 +3,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import HourglassTopRoundedIcon from '@mui/icons-material/HourglassTopRounded';
 import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import {
   Alert,
   AppBar,
@@ -93,13 +94,13 @@ function Nav({ path, navigate }: { path: AppPath; navigate: (path: AppPath) => v
 
   return (
     <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(148,163,184,.12)' }}>
-      <Toolbar sx={{ gap: { xs: 0.5, sm: 2 }, px: { xs: 1.5, sm: 3 } }}>
+      <Toolbar sx={{ gap: { xs: 0.25, sm: 2 }, px: { xs: 1, sm: 3 }, minHeight: { xs: 58, sm: 64 } }}>
         <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
           <ShieldOutlinedIcon color="primary" />
-          <Typography sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}>VeriFrame</Typography>
+          <Typography sx={{ fontWeight: 800, letterSpacing: '-0.03em', display: { xs: 'none', sm: 'block' } }}>VeriFrame</Typography>
         </Stack>
         {items.map(([to, label]) => (
-          <Button key={to} color={path === to ? 'primary' : 'inherit'} onClick={() => navigate(to)} sx={{ px: { xs: 1, sm: 2 }, minWidth: 0 }}>
+          <Button key={to} color={path === to ? 'primary' : 'inherit'} onClick={() => navigate(to)} sx={{ px: { xs: 0.75, sm: 2 }, fontSize: { xs: '0.78rem', sm: '0.875rem' }, minWidth: 0 }}>
             {label}
           </Button>
         ))}
@@ -163,6 +164,7 @@ function Home({ navigate }: { navigate: (path: AppPath) => void }) {
 }
 
 function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
+  const [copied, setCopied] = useState(false);
   const raw = sessionStorage.getItem('veriframe:lastResult');
   const prediction = raw ? (JSON.parse(raw) as PredictionResponse) : null;
 
@@ -172,6 +174,22 @@ function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
 
   if (!prediction) return null;
   const isFake = prediction.predicted_label === 'fake';
+
+  async function copyResult() {
+    const summary = [
+      'VeriFrame analysis result',
+      `File: ${prediction.filename}`,
+      `Verdict: ${isFake ? 'Likely manipulated' : 'Likely authentic'}`,
+      `Confidence: ${formatPercent(prediction.confidence)}`,
+      `Fake probability: ${formatPercent(prediction.probabilities.fake)}`,
+      `Real probability: ${formatPercent(prediction.probabilities.real)}`,
+      `Frames sampled: ${prediction.sampled_frames}`,
+    ].join('\n');
+    await navigator.clipboard.writeText(summary);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
   return (
     <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
       <Stack spacing={4}>
@@ -205,7 +223,8 @@ function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
         </Alert>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <Button variant="contained" startIcon={<RefreshRoundedIcon />} onClick={() => navigate('/analyze')}>Analyze another video</Button>
-          <Button variant="outlined" onClick={() => navigate('/how-it-works')}>Review detection pipeline</Button>
+          <Button variant="outlined" startIcon={<ContentCopyRoundedIcon />} onClick={copyResult}>{copied ? 'Copied' : 'Copy result'}</Button>
+          <Button variant="text" onClick={() => navigate('/how-it-works')}>Review detection pipeline</Button>
         </Stack>
       </Stack>
     </Container>
@@ -249,23 +268,32 @@ function About({ navigate }: { navigate: (path: AppPath) => void }) {
 }
 
 function AnalysisProgress({ status }: { status: string }) {
+  const isAnalyzing = status.includes('Analyzing');
+  const isQueued = status.includes('queued');
+  const isWaking = status.includes('Waking');
   const steps = [
-    ['Upload accepted', status !== ''],
-    ['Queued / waking service', status.includes('queued') || status.includes('Waking') || status.includes('Analyzing')],
-    ['Running model inference', status.includes('Analyzing')],
-  ];
+    { label: 'Upload submitted', state: status ? 'done' : 'waiting' },
+    { label: 'Service ready / queued', state: isAnalyzing ? 'done' : (isQueued || isWaking) ? 'active' : 'waiting' },
+    { label: 'Running model inference', state: isAnalyzing ? 'active' : 'waiting' },
+  ] as const;
   return (
     <Card>
       <CardContent sx={{ p: 3 }}>
         <Stack spacing={2}>
           <Typography variant="overline" color="text.secondary">Analysis progress</Typography>
-          {steps.map(([label, active], index) => (
-            <Stack key={String(label)} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              {active ? <CheckCircleRoundedIcon color="success" /> : <HourglassTopRoundedIcon color="disabled" />}
+          {steps.map((step, index) => (
+            <Stack key={step.label} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              {step.state === 'done' ? (
+                <CheckCircleRoundedIcon color="success" />
+              ) : step.state === 'active' ? (
+                <CircularProgress size={22} />
+              ) : (
+                <HourglassTopRoundedIcon color="disabled" />
+              )}
               <Box>
-                <Typography sx={{ fontWeight: 700 }}>{index + 1}. {label}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>{index + 1}. {step.label}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {active ? 'Completed or in progress' : 'Waiting'}
+                  {step.state === 'done' ? 'Completed' : step.state === 'active' ? 'In progress' : 'Waiting'}
                 </Typography>
               </Box>
             </Stack>
