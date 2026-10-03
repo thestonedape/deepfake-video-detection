@@ -176,14 +176,15 @@ function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
   const isFake = prediction.predicted_label === 'fake';
 
   async function copyResult() {
+    const result = prediction;
     const summary = [
       'VeriFrame analysis result',
-      `File: ${prediction.filename}`,
+      `File: ${result.filename}`,
       `Verdict: ${isFake ? 'Likely manipulated' : 'Likely authentic'}`,
-      `Confidence: ${formatPercent(prediction.confidence)}`,
-      `Fake probability: ${formatPercent(prediction.probabilities.fake)}`,
-      `Real probability: ${formatPercent(prediction.probabilities.real)}`,
-      `Frames sampled: ${prediction.sampled_frames}`,
+      `Confidence: ${formatPercent(result.confidence)}`,
+      `Fake probability: ${formatPercent(result.probabilities.fake)}`,
+      `Real probability: ${formatPercent(result.probabilities.real)}`,
+      `Frames sampled: ${result.sampled_frames}`,
     ].join('\n');
     await navigator.clipboard.writeText(summary);
     setCopied(true);
