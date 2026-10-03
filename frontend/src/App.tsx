@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
   Alert,
   AppBar,
@@ -26,7 +27,6 @@ import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { submitVideo } from './jobs.mjs';
 
-type Page = 'home' | 'analyze' | 'about';
 type PredictionResponse = {
   filename: string;
   predicted_label: 'fake' | 'real';
@@ -55,17 +55,25 @@ function ProbabilityRow({ label, value, color }: { label: string; value: number 
   );
 }
 
-function Nav({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
+function Nav() {
+  const location = useLocation();
+  const activePath = location.pathname;
+  const items = [
+    ['/', 'Home'],
+    ['/analyze', 'Analyze'],
+    ['/how-it-works', 'How it works'],
+  ] as const;
+
   return (
     <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(148,163,184,.12)' }}>
       <Toolbar sx={{ gap: 2 }}>
-        <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer' }} onClick={() => onNavigate('home')}>
+        <Stack component={Link} to="/" direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}>
           <ShieldOutlinedIcon color="primary" />
           <Typography sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}>VeriFrame</Typography>
         </Stack>
-        {(['home', 'analyze', 'about'] as Page[]).map((item) => (
-          <Button key={item} color={page === item ? 'primary' : 'inherit'} onClick={() => onNavigate(item)}>
-            {item === 'home' ? 'Home' : item === 'analyze' ? 'Analyze' : 'How it works'}
+        {items.map(([to, label]) => (
+          <Button key={to} component={Link} to={to} color={activePath === to ? 'primary' : 'inherit'}>
+            {label}
           </Button>
         ))}
       </Toolbar>
@@ -73,7 +81,8 @@ function Nav({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => voi
   );
 }
 
-function Home({ onAnalyze, onAbout }: { onAnalyze: () => void; onAbout: () => void }) {
+function Home() {
+  const navigate = useNavigate();
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 7, md: 12 } }}>
       <Box sx={{ display: 'grid', gap: 6, gridTemplateColumns: { xs: '1fr', md: '1.1fr .9fr' }, alignItems: 'center' }}>
@@ -86,8 +95,8 @@ function Home({ onAnalyze, onAbout }: { onAnalyze: () => void; onAbout: () => vo
             Upload a clip, let the model sample key frames, and get a clear real-vs-fake probability breakdown with supporting metadata.
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-            <Button variant="contained" size="large" onClick={onAnalyze} endIcon={<ArrowForwardRoundedIcon />}>Analyze a video</Button>
-            <Button variant="outlined" size="large" onClick={onAbout}>See how detection works</Button>
+            <Button variant="contained" size="large" onClick={() => navigate('/analyze')} endIcon={<ArrowForwardRoundedIcon />}>Analyze a video</Button>
+            <Button variant="outlined" size="large" onClick={() => navigate('/how-it-works')}>See how detection works</Button>
           </Stack>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ pt: 2 }}>
             {[
@@ -127,7 +136,8 @@ function Home({ onAnalyze, onAbout }: { onAnalyze: () => void; onAbout: () => vo
   );
 }
 
-function About({ onAnalyze }: { onAnalyze: () => void }) {
+function About() {
+  const navigate = useNavigate();
   return (
     <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
       <Stack spacing={4}>
@@ -157,7 +167,7 @@ function About({ onAnalyze }: { onAnalyze: () => void }) {
         <Alert severity="info">
           A model confidence score is evidence from this detector, not definitive proof of authenticity. Treat borderline results as a reason for further verification.
         </Alert>
-        <Button variant="contained" size="large" onClick={onAnalyze} sx={{ alignSelf: 'flex-start' }}>Open analyzer</Button>
+        <Button variant="contained" size="large" onClick={() => navigate('/analyze')} sx={{ alignSelf: 'flex-start' }}>Open analyzer</Button>
       </Stack>
     </Container>
   );
@@ -318,16 +328,18 @@ function Analyze() {
 }
 
 export default function App() {
-  const [page, setPage] = useState<Page>('home');
   return (
     <Box sx={{
       minHeight: '100vh',
       background: 'radial-gradient(circle at 15% 0%, rgba(124,140,248,.15), transparent 38%), radial-gradient(circle at 85% 85%, rgba(77,208,177,.09), transparent 34%), #0b1120',
     }}>
-      <Nav page={page} onNavigate={setPage} />
-      {page === 'home' && <Home onAnalyze={() => setPage('analyze')} onAbout={() => setPage('about')} />}
-      {page === 'analyze' && <Analyze />}
-      {page === 'about' && <About onAnalyze={() => setPage('analyze')} />}
+      <Nav />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/analyze" element={<Analyze />} />
+        <Route path="/how-it-works" element={<About />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Box>
   );
 }
