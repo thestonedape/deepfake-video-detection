@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import HourglassTopRoundedIcon from '@mui/icons-material/HourglassTopRounded';
 import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded';
@@ -31,6 +30,32 @@ import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { submitVideo } from './jobs.mjs';
 
+type AppPath = '/' | '/analyze' | '/result' | '/how-it-works';
+
+function normalizePath(pathname: string): AppPath {
+  if (pathname === '/analyze' || pathname === '/result' || pathname === '/how-it-works') return pathname;
+  return '/';
+}
+
+function useAppRouter() {
+  const [path, setPath] = useState<AppPath>(() => normalizePath(window.location.pathname));
+
+  useEffect(() => {
+    const handlePopState = () => setPath(normalizePath(window.location.pathname));
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  function navigate(next: AppPath, replace = false) {
+    if (replace) window.history.replaceState({}, '', next);
+    else window.history.pushState({}, '', next);
+    setPath(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  return { path, navigate };
+}
+
 type PredictionResponse = {
   filename: string;
   predicted_label: 'fake' | 'real';
@@ -59,24 +84,22 @@ function ProbabilityRow({ label, value, color }: { label: string; value: number 
   );
 }
 
-function Nav() {
-  const location = useLocation();
-  const activePath = location.pathname;
-  const items = [
+function Nav({ path, navigate }: { path: AppPath; navigate: (path: AppPath) => void }) {
+  const items: Array<[AppPath, string]> = [
     ['/', 'Home'],
     ['/analyze', 'Analyze'],
     ['/how-it-works', 'How it works'],
-  ] as const;
+  ];
 
   return (
     <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(148,163,184,.12)' }}>
-      <Toolbar sx={{ gap: 2 }}>
-        <Stack component={Link} to="/" direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}>
+      <Toolbar sx={{ gap: { xs: 0.5, sm: 2 }, px: { xs: 1.5, sm: 3 } }}>
+        <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
           <ShieldOutlinedIcon color="primary" />
           <Typography sx={{ fontWeight: 800, letterSpacing: '-0.03em' }}>VeriFrame</Typography>
         </Stack>
         {items.map(([to, label]) => (
-          <Button key={to} component={Link} to={to} color={activePath === to ? 'primary' : 'inherit'}>
+          <Button key={to} color={path === to ? 'primary' : 'inherit'} onClick={() => navigate(to)} sx={{ px: { xs: 1, sm: 2 }, minWidth: 0 }}>
             {label}
           </Button>
         ))}
@@ -85,8 +108,7 @@ function Nav() {
   );
 }
 
-function Home() {
-  const navigate = useNavigate();
+function Home({ navigate }: { navigate: (path: AppPath) => void }) {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 7, md: 12 } }}>
       <Box sx={{ display: 'grid', gap: 6, gridTemplateColumns: { xs: '1fr', md: '1.1fr .9fr' }, alignItems: 'center' }}>
@@ -140,11 +162,13 @@ function Home() {
   );
 }
 
-function ResultPage() {
-  const navigate = useNavigate();
+function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
   const raw = sessionStorage.getItem('veriframe:lastResult');
   const prediction = raw ? (JSON.parse(raw) as PredictionResponse) : null;
-  if (!prediction) return <Navigate to="/analyze" replace />;
+  if (!prediction) {
+    useEffect(() => navigate('/analyze'), [navigate]);
+    return null;
+  }
   const isFake = prediction.predicted_label === 'fake';
   return (
     <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
@@ -186,8 +210,7 @@ function ResultPage() {
   );
 }
 
-function About() {
-  const navigate = useNavigate();
+function About({ navigate }: { navigate: (path: AppPath) => void }) {
   return (
     <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
       <Stack spacing={4}>
@@ -251,14 +274,13 @@ function AnalysisProgress({ status }: { status: string }) {
   );
 }
 
-function Analyze() {
+function Analyze({ navigate }: { navigate: (path: AppPath) => void }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!selectedFile) {
@@ -415,19 +437,17 @@ function Analyze() {
 }
 
 export default function App() {
+  const { path, navigate } = useAppRouter();
   return (
     <Box sx={{
       minHeight: '100vh',
       background: 'radial-gradient(circle at 15% 0%, rgba(124,140,248,.15), transparent 38%), radial-gradient(circle at 85% 85%, rgba(77,208,177,.09), transparent 34%), #0b1120',
     }}>
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/analyze" element={<Analyze />} />
-        <Route path="/result" element={<ResultPage />} />
-        <Route path="/how-it-works" element={<About />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Nav path={path} navigate={navigate} />
+      {path === '/' && <Home navigate={navigate} />}
+      {path === '/analyze' && <Analyze navigate={navigate} />}
+      {path === '/result' && <ResultPage navigate={navigate} />}
+      {path === '/how-it-works' && <About navigate={navigate} />}
     </Box>
   );
 }
