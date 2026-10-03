@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import HourglassTopRoundedIcon from '@mui/icons-material/HourglassTopRounded';
+import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import {
   Alert,
   AppBar,
@@ -136,6 +140,52 @@ function Home() {
   );
 }
 
+function ResultPage() {
+  const navigate = useNavigate();
+  const raw = sessionStorage.getItem('veriframe:lastResult');
+  const prediction = raw ? (JSON.parse(raw) as PredictionResponse) : null;
+  if (!prediction) return <Navigate to="/analyze" replace />;
+  const isFake = prediction.predicted_label === 'fake';
+  return (
+    <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
+      <Stack spacing={4}>
+        <Box>
+          <Typography variant="overline" color="primary.main">Analysis complete</Typography>
+          <Typography variant="h1" sx={{ mt: 1 }}>{isFake ? 'Likely manipulated' : 'Likely authentic'}</Typography>
+          <Typography color="text.secondary" sx={{ mt: 1.5 }}>
+            The detector returned {formatPercent(prediction.confidence)} confidence for {prediction.filename}.
+          </Typography>
+        </Box>
+        <Card sx={{ borderColor: isFake ? 'error.main' : 'success.main' }}>
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <Stack spacing={3}>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                {isFake ? <GppBadOutlinedIcon color="error" /> : <GppGoodOutlinedIcon color="success" />}
+                <Typography variant="h2">Model verdict</Typography>
+              </Stack>
+              <ProbabilityRow label="Manipulated / fake" value={prediction.probabilities.fake} color="error" />
+              <ProbabilityRow label="Authentic / real" value={prediction.probabilities.real} color="success" />
+              <Divider />
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3,1fr)' }, gap: 2 }}>
+                <Box><Typography variant="caption" color="text.secondary">Frames read</Typography><Typography sx={{ fontWeight: 700 }}>{prediction.frame_count}</Typography></Box>
+                <Box><Typography variant="caption" color="text.secondary">Frames sampled</Typography><Typography sx={{ fontWeight: 700 }}>{prediction.sampled_frames}</Typography></Box>
+                <Box><Typography variant="caption" color="text.secondary">File</Typography><Typography sx={{ fontWeight: 700, wordBreak: 'break-word' }}>{prediction.filename}</Typography></Box>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+        <Alert severity="info" icon={<TravelExploreRoundedIcon />}>
+          Treat this result as model evidence, not definitive proof. Borderline or high-stakes cases should be verified with additional forensic checks and source provenance.
+        </Alert>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+          <Button variant="contained" startIcon={<RefreshRoundedIcon />} onClick={() => navigate('/analyze')}>Analyze another video</Button>
+          <Button variant="outlined" onClick={() => navigate('/how-it-works')}>Review detection pipeline</Button>
+        </Stack>
+      </Stack>
+    </Container>
+  );
+}
+
 function About() {
   const navigate = useNavigate();
   return (
@@ -173,6 +223,34 @@ function About() {
   );
 }
 
+function AnalysisProgress({ status }: { status: string }) {
+  const steps = [
+    ['Upload accepted', status !== ''],
+    ['Queued / waking service', status.includes('queued') || status.includes('Waking') || status.includes('Analyzing')],
+    ['Running model inference', status.includes('Analyzing')],
+  ];
+  return (
+    <Card>
+      <CardContent sx={{ p: 3 }}>
+        <Stack spacing={2}>
+          <Typography variant="overline" color="text.secondary">Analysis progress</Typography>
+          {steps.map(([label, active], index) => (
+            <Stack key={String(label)} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              {active ? <CheckCircleRoundedIcon color="success" /> : <HourglassTopRoundedIcon color="disabled" />}
+              <Box>
+                <Typography sx={{ fontWeight: 700 }}>{index + 1}. {label}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {active ? 'Completed or in progress' : 'Waiting'}
+                </Typography>
+              </Box>
+            </Stack>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
 function Analyze() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -180,6 +258,7 @@ function Analyze() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!selectedFile) {
@@ -222,7 +301,10 @@ function Analyze() {
       formData.append('file', selectedFile);
       setJobStatus('Waking the service and uploading your video…');
       const result = await submitVideo(API_URL, formData, setJobStatus);
-      setPrediction({ filename: selectedFile.name, ...result });
+      const completed = { filename: selectedFile.name, ...result };
+      setPrediction(completed);
+      sessionStorage.setItem('veriframe:lastResult', JSON.stringify(completed));
+      navigate('/result');
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Unexpected error.');
     } finally {
@@ -242,7 +324,12 @@ function Analyze() {
           </Typography>
         </Box>
 
-        {loading && jobStatus && <Alert severity="info" icon={<CircularProgress size={18} />}>{jobStatus}</Alert>}
+        {loading && jobStatus && (
+          <>
+            <Alert severity="info" icon={<CircularProgress size={18} />}>{jobStatus}</Alert>
+            <AnalysisProgress status={jobStatus} />
+          </>
+        )}
 
         <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
           <Card>
@@ -337,6 +424,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/analyze" element={<Analyze />} />
+        <Route path="/result" element={<ResultPage />} />
         <Route path="/how-it-works" element={<About />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
