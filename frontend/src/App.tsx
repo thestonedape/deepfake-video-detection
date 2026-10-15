@@ -1,63 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import HourglassTopRoundedIcon from '@mui/icons-material/HourglassTopRounded';
-import TravelExploreRoundedIcon from '@mui/icons-material/TravelExploreRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import {
-  Alert,
-  AppBar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  CircularProgress,
-  Container,
-  Divider,
-  LinearProgress,
-  Stack,
-  Toolbar,
-  Typography,
-} from '@mui/material';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
-import GppGoodOutlinedIcon from '@mui/icons-material/GppGoodOutlined';
-import GppBadOutlinedIcon from '@mui/icons-material/GppBadOutlined';
-import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
-import PsychologyOutlinedIcon from '@mui/icons-material/PsychologyOutlined';
-import SpeedOutlinedIcon from '@mui/icons-material/SpeedOutlined';
-import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import { useEffect, useState, type DragEvent, type FormEvent } from 'react';
 import { submitVideo } from './jobs.mjs';
+import './site.css';
 
-type AppPath = '/' | '/analyze' | '/result' | '/how-it-works';
-
-function normalizePath(pathname: string): AppPath {
-  if (pathname === '/analyze' || pathname === '/result' || pathname === '/how-it-works') return pathname;
-  return '/';
-}
-
-function useAppRouter() {
-  const [path, setPath] = useState<AppPath>(() => normalizePath(window.location.pathname));
-
-  useEffect(() => {
-    const handlePopState = () => setPath(normalizePath(window.location.pathname));
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  function navigate(next: AppPath, replace = false) {
-    if (replace) window.history.replaceState({}, '', next);
-    else window.history.pushState({}, '', next);
-    setPath(next);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  return { path, navigate };
-}
-
-type PredictionResponse = {
+type Route = '/' | '/analyze' | '/result' | '/how-it-works';
+type Prediction = {
   filename: string;
   predicted_label: 'fake' | 'real';
   confidence: number;
@@ -67,300 +13,169 @@ type PredictionResponse = {
 };
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'https://deepfake-video-detection-486r.onrender.com';
-const MAX_UPLOAD_BYTES = 100 * 1024 * 1024;
+const MAX_BYTES = 100 * 1024 * 1024;
+const pct = (value: number) => (value * 100).toFixed(1) + '%';
+const navItems: { path: Route; label: string }[] = [
+  { path: '/', label: 'Overview' },
+  { path: '/analyze', label: 'Analyzer' },
+  { path: '/how-it-works', label: 'Method' },
+];
 
-function formatPercent(value: number) {
-  return `${(value * 100).toFixed(1)}%`;
+function routeFromLocation(): Route {
+  const p = window.location.pathname;
+  return p === '/analyze' || p === '/result' || p === '/how-it-works' ? p : '/';
 }
 
-function ProbabilityRow({ label, value, color }: { label: string; value: number | null; color: 'error' | 'success' }) {
-  return (
-    <Box>
-      <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 0.75 }}>
-        <Typography variant="body2" color="text.secondary">{label}</Typography>
-        <Typography variant="body2" sx={{ fontWeight: 700 }}>{value === null ? '--' : formatPercent(value)}</Typography>
-      </Stack>
-      <LinearProgress variant="determinate" color={color} value={value === null ? 0 : value * 100} />
-    </Box>
-  );
-}
-
-function Nav({ path, navigate }: { path: AppPath; navigate: (path: AppPath) => void }) {
-  const items: Array<[AppPath, string]> = [
-    ['/', 'Home'],
-    ['/analyze', 'Analyze'],
-    ['/how-it-works', 'How it works'],
-  ];
-
-  return (
-    <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(148,163,184,.12)' }}>
-      <Toolbar sx={{ gap: { xs: 0.25, sm: 2 }, px: { xs: 1, sm: 3 }, minHeight: { xs: 58, sm: 64 } }}>
-        <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center', flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <ShieldOutlinedIcon color="primary" />
-          <Typography sx={{ fontWeight: 800, letterSpacing: '-0.03em', display: { xs: 'none', sm: 'block' } }}>VeriFrame</Typography>
-        </Stack>
-        {items.map(([to, label]) => (
-          <Button key={to} color={path === to ? 'primary' : 'inherit'} onClick={() => navigate(to)} sx={{ px: { xs: 0.75, sm: 2 }, fontSize: { xs: '0.78rem', sm: '0.875rem' }, minWidth: 0 }}>
-            {label}
-          </Button>
-        ))}
-      </Toolbar>
-    </AppBar>
-  );
-}
-
-function Home({ navigate }: { navigate: (path: AppPath) => void }) {
-  return (
-    <Container maxWidth="lg" sx={{ py: { xs: 7, md: 12 } }}>
-      <Box sx={{ display: 'grid', gap: 6, gridTemplateColumns: { xs: '1fr', md: '1.1fr .9fr' }, alignItems: 'center' }}>
-        <Stack spacing={3}>
-          <Chip icon={<ShieldOutlinedIcon />} label="AI media verification" color="primary" variant="outlined" sx={{ alignSelf: 'flex-start' }} />
-          <Typography variant="h1" sx={{ maxWidth: 760 }}>
-            Check whether a video shows signs of AI manipulation.
-          </Typography>
-          <Typography color="text.secondary" sx={{ fontSize: { xs: '1rem', md: '1.14rem' }, maxWidth: 650 }}>
-            Upload a clip, let the model sample key frames, and get a clear real-vs-fake probability breakdown with supporting metadata.
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-            <Button variant="contained" size="large" onClick={() => navigate('/analyze')} endIcon={<ArrowForwardRoundedIcon />}>Analyze a video</Button>
-            <Button variant="outlined" size="large" onClick={() => navigate('/how-it-works')}>See how detection works</Button>
-          </Stack>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ pt: 2 }}>
-            {[
-              ['10', 'sampled frames'],
-              ['100 MB', 'upload limit'],
-              ['Async', 'job processing'],
-            ].map(([value, label]) => (
-              <Box key={label}>
-                <Typography variant="h2">{value}</Typography>
-                <Typography variant="body2" color="text.secondary">{label}</Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Stack>
-        <Card sx={{ p: { xs: 1, md: 2 }, background: 'linear-gradient(145deg, rgba(124,140,248,.15), rgba(18,26,46,.88))' }}>
-          <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
-            <Stack spacing={3}>
-              <Typography variant="overline" color="text.secondary">What you get</Typography>
-              {[
-                [<PsychologyOutlinedIcon color="primary" />, 'Model verdict', 'Real or fake classification with calibrated confidence.'],
-                [<SpeedOutlinedIcon color="secondary" />, 'Readable probabilities', 'Separate fake and real scores, not just a binary label.'],
-                [<SecurityOutlinedIcon color="primary" />, 'Private job access', 'Uploads are handled through token-protected asynchronous jobs.'],
-              ].map(([icon, title, copy]) => (
-                <Stack key={String(title)} direction="row" spacing={2}>
-                  <Box>{icon}</Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>{title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{copy}</Typography>
-                  </Box>
-                </Stack>
-              ))}
-            </Stack>
-          </CardContent>
-        </Card>
-      </Box>
-    </Container>
-  );
-}
-
-function ResultPage({ navigate }: { navigate: (path: AppPath) => void }) {
-  const [copied, setCopied] = useState(false);
-  const raw = sessionStorage.getItem('veriframe:lastResult');
-  const prediction = raw ? (JSON.parse(raw) as PredictionResponse) : null;
-
+function useRoute() {
+  const [route, setRoute] = useState<Route>(routeFromLocation);
   useEffect(() => {
-    if (!prediction) navigate('/analyze');
-  }, [prediction, navigate]);
-
-  if (!prediction) return null;
-  const isFake = prediction.predicted_label === 'fake';
-
-  const result = prediction;
-
-  async function copyResult() {
-    const summary = [
-      'VeriFrame analysis result',
-      `File: ${result.filename}`,
-      `Verdict: ${isFake ? 'Likely manipulated' : 'Likely authentic'}`,
-      `Confidence: ${formatPercent(result.confidence)}`,
-      `Fake probability: ${formatPercent(result.probabilities.fake)}`,
-      `Real probability: ${formatPercent(result.probabilities.real)}`,
-      `Frames sampled: ${result.sampled_frames}`,
-    ].join('\n');
-    await navigator.clipboard.writeText(summary);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
+    const onPop = () => setRoute(routeFromLocation());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+  function go(path: Route) {
+    if (path !== window.location.pathname) window.history.pushState({}, '', path);
+    setRoute(path);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
-
-  return (
-    <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
-      <Stack spacing={4}>
-        <Box>
-          <Typography variant="overline" color="primary.main">Analysis complete</Typography>
-          <Typography variant="h1" sx={{ mt: 1 }}>{isFake ? 'Likely manipulated' : 'Likely authentic'}</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1.5 }}>
-            The detector returned {formatPercent(prediction.confidence)} confidence for {prediction.filename}.
-          </Typography>
-        </Box>
-        <Card sx={{ borderColor: isFake ? 'error.main' : 'success.main' }}>
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-            <Stack spacing={3}>
-              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                {isFake ? <GppBadOutlinedIcon color="error" /> : <GppGoodOutlinedIcon color="success" />}
-                <Typography variant="h2">Model verdict</Typography>
-              </Stack>
-              <ProbabilityRow label="Manipulated / fake" value={prediction.probabilities.fake} color="error" />
-              <ProbabilityRow label="Authentic / real" value={prediction.probabilities.real} color="success" />
-              <Divider />
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3,1fr)' }, gap: 2 }}>
-                <Box><Typography variant="caption" color="text.secondary">Frames read</Typography><Typography sx={{ fontWeight: 700 }}>{prediction.frame_count}</Typography></Box>
-                <Box><Typography variant="caption" color="text.secondary">Frames sampled</Typography><Typography sx={{ fontWeight: 700 }}>{prediction.sampled_frames}</Typography></Box>
-                <Box><Typography variant="caption" color="text.secondary">File</Typography><Typography sx={{ fontWeight: 700, wordBreak: 'break-word' }}>{prediction.filename}</Typography></Box>
-              </Box>
-            </Stack>
-          </CardContent>
-        </Card>
-        <Alert severity="info" icon={<TravelExploreRoundedIcon />}>
-          Treat this result as model evidence, not definitive proof. Borderline or high-stakes cases should be verified with additional forensic checks and source provenance.
-        </Alert>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-          <Button variant="contained" startIcon={<RefreshRoundedIcon />} onClick={() => navigate('/analyze')}>Analyze another video</Button>
-          <Button variant="outlined" startIcon={<ContentCopyRoundedIcon />} onClick={copyResult}>{copied ? 'Copied' : 'Copy result'}</Button>
-          <Button variant="text" onClick={() => navigate('/how-it-works')}>Review detection pipeline</Button>
-        </Stack>
-      </Stack>
-    </Container>
-  );
+  return { route, go };
 }
 
-function About({ navigate }: { navigate: (path: AppPath) => void }) {
+function Header({ route, go }: { route: Route; go: (path: Route) => void }) {
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
-      <Stack spacing={4}>
-        <Box>
-          <Typography variant="overline" color="primary.main">Detection pipeline</Typography>
-          <Typography variant="h1" sx={{ mt: 1, mb: 2 }}>How the scanner reaches a verdict.</Typography>
-          <Typography color="text.secondary">
-            The system does not inspect every frame. It validates the video, samples representative frames, preprocesses them, runs inference through the saved PyTorch model, and averages frame-level outputs into a video-level result.
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2,1fr)' } }}>
-          {[
-            ['01', 'Validate upload', 'The API checks size, type, signature, decodability and resource limits before inference.'],
-            ['02', 'Sample frames', 'Ten frames are selected across the video timeline for efficient analysis.'],
-            ['03', 'Run model inference', 'The EfficientNet-based PyTorch checkpoint evaluates sampled visual evidence.'],
-            ['04', 'Aggregate the result', 'Frame probabilities are averaged into the final real/fake confidence shown in the UI.'],
-          ].map(([num, title, copy]) => (
-            <Card key={num}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="overline" color="primary.main">{num}</Typography>
-                <Typography variant="h2" sx={{ my: 1 }}>{title}</Typography>
-                <Typography variant="body2" color="text.secondary">{copy}</Typography>
-              </CardContent>
-            </Card>
+    <header className="topbar">
+      <div className="topbar-inner">
+        <button className="wordmark" onClick={() => go('/')} aria-label="VeriFrame home">
+          <span className="wordmark-symbol" aria-hidden="true"><i /><i /><i /><i /></span>
+          <span>veriframe<span className="wordmark-period">.</span></span>
+        </button>
+        <nav className="navigation" aria-label="Main navigation">
+          {navItems.map((item) => (
+            <button key={item.path} className={route === item.path ? 'nav-active' : ''} onClick={() => go(item.path)} aria-current={route === item.path ? 'page' : undefined}>
+              {item.label}
+            </button>
           ))}
-        </Box>
-        <Alert severity="info">
-          A model confidence score is evidence from this detector, not definitive proof of authenticity. Treat borderline results as a reason for further verification.
-        </Alert>
-        <Button variant="contained" size="large" onClick={() => navigate('/analyze')} sx={{ alignSelf: 'flex-start' }}>Open analyzer</Button>
-      </Stack>
-    </Container>
+        </nav>
+        <button className="header-action" onClick={() => go('/analyze')}>Open analyzer <span aria-hidden="true">↗</span></button>
+      </div>
+    </header>
   );
 }
 
-function AnalysisProgress({ status }: { status: string }) {
-  const isAnalyzing = status.includes('Analyzing');
-  const isQueued = status.includes('queued');
-  const isWaking = status.includes('Waking');
-  const steps = [
-    { label: 'Upload submitted', state: status ? 'done' : 'waiting' },
-    { label: 'Service ready / queued', state: isAnalyzing ? 'done' : (isQueued || isWaking) ? 'active' : 'waiting' },
-    { label: 'Running model inference', state: isAnalyzing ? 'active' : 'waiting' },
-  ] as const;
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <p className="eyebrow"><span className="eyebrow-line" />{children}</p>;
+}
+
+function ScanArtwork() {
   return (
-    <Card>
-      <CardContent sx={{ p: 3 }}>
-        <Stack spacing={2}>
-          <Typography variant="overline" color="text.secondary">Analysis progress</Typography>
-          {steps.map((step, index) => (
-            <Stack key={step.label} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              {step.state === 'done' ? (
-                <CheckCircleRoundedIcon color="success" />
-              ) : step.state === 'active' ? (
-                <CircularProgress size={22} />
-              ) : (
-                <HourglassTopRoundedIcon color="disabled" />
-              )}
-              <Box>
-                <Typography sx={{ fontWeight: 700 }}>{index + 1}. {step.label}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {step.state === 'done' ? 'Completed' : step.state === 'active' ? 'In progress' : 'Waiting'}
-                </Typography>
-              </Box>
-            </Stack>
-          ))}
-        </Stack>
-      </CardContent>
-    </Card>
+    <div className="scan-window" aria-label="Illustration of the ten-frame video analysis process">
+      <div className="scan-header"><span>FRAME STUDY / 05—10</span><span className="scan-status"><i /> MODEL VIEW</span></div>
+      <div className="scan-area">
+        <div className="scan-rings"><span /><span /><span /></div>
+        <div className="scan-cross scan-cross-a" /><div className="scan-cross scan-cross-b" />
+        <div className="scan-axis scan-axis-x" /><div className="scan-axis scan-axis-y" />
+        <span className="scan-corner scan-corner-tl" /><span className="scan-corner scan-corner-br" />
+        <div className="scan-center">SPATIAL <b>×</b> FREQUENCY</div>
+        <span className="scan-corner-text">EVIDENCE / MODEL INPUT</span>
+      </div>
+      <div className="scan-filmstrip">
+        {Array.from({ length: 10 }, (_, i) => (
+          <div key={i} className={i === 4 ? 'film-frame film-active' : 'film-frame'}>
+            <span>{String(i + 1).padStart(2, '0')}</span>
+          </div>
+        ))}
+      </div>
+      <div className="scan-footer"><span>ILLUSTRATIVE MODEL PIPELINE</span><span>10 SAMPLED FRAMES</span></div>
+    </div>
   );
 }
 
-function Analyze({ navigate }: { navigate: (path: AppPath) => void }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function Home({ go }: { go: (path: Route) => void }) {
+  return (
+    <main>
+      <section className="home-hero wrap">
+        <div className="home-intro">
+          <Eyebrow>VIDEO FORENSICS / RESEARCH PROTOTYPE</Eyebrow>
+          <h1>Question<br />the <em>frame.</em></h1>
+          <p className="hero-lead">A closer look at what a video might be hiding.</p>
+          <p className="hero-description">Upload a clip. A spatial and frequency-based model examines sampled frames and returns a probability estimate—not a final judgment.</p>
+          <div className="hero-actions">
+            <button className="button-primary" onClick={() => go('/analyze')}>Analyze a video <span aria-hidden="true">↗</span></button>
+            <button className="text-link" onClick={() => go('/how-it-works')}>Explore the method <span aria-hidden="true">↗</span></button>
+          </div>
+          <div className="hero-footnote"><span>01 / INPUT</span><span>02 / INFERENCE</span><span>03 / REVIEW</span></div>
+        </div>
+        <ScanArtwork />
+      </section>
+      <section className="capability-section">
+        <div className="wrap">
+          <div className="section-heading"><span className="eyebrow">WHAT IS UNDER THE HOOD</span><h2>Evidence, not answers.</h2></div>
+          <div className="capability-grid">
+            <div className="capability"><span className="cap-number">01</span><h3>10 frames</h3><p>Samples a clip across its timeline rather than reading every frame.</p></div>
+            <div className="capability"><span className="cap-number">02</span><h3>Two signals</h3><p>Combines EfficientNet-B4 visual features with FFT-based features.</p></div>
+            <div className="capability"><span className="cap-number">03</span><h3>One estimate</h3><p>Shows both class probabilities with the context needed to interpret them.</p></div>
+          </div>
+        </div>
+      </section>
+      <div className="wrap bottom-cta"><p>Have a clip worth examining?</p><button className="text-link" onClick={() => go('/analyze')}>Start an analysis <span aria-hidden="true">↗</span></button></div>
+    </main>
+  );
+}
+
+function ScoreBar({ label, value, selected }: { label: string; value: number; selected?: boolean }) {
+  return (
+    <div className="score-row">
+      <div className="score-head"><span>{label}</span><strong>{pct(value)}</strong></div>
+      <div className="score-track"><div className={selected ? 'score-fill selected' : 'score-fill'} style={{ width: pct(value) }} /></div>
+    </div>
+  );
+}
+
+function Analyzer({ go }: { go: (path: Route) => void }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState('');
-
+  const [error, setError] = useState('');
   useEffect(() => {
-    if (!selectedFile) {
-      setPreviewUrl(null);
+    if (!file) { setPreview(null); return; }
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  function selectFile(next: File | null) {
+    setError('');
+    if (next && next.size > MAX_BYTES) {
+      setFile(null);
+      setError('This file is over 100 MB. Choose a smaller video.');
       return;
     }
-    const nextUrl = URL.createObjectURL(selectedFile);
-    setPreviewUrl(nextUrl);
-    return () => URL.revokeObjectURL(nextUrl);
-  }, [selectedFile]);
-
-  const isFake = prediction?.predicted_label === 'fake';
-  const verdictLabel = useMemo(() => {
-    if (!prediction) return 'Awaiting analysis';
-    return isFake ? 'Likely manipulated' : 'Likely authentic';
-  }, [prediction, isFake]);
-
-  function handleFileChange(file: File | null) {
-    setPrediction(null);
-    setError(null);
-    if (file && file.size > MAX_UPLOAD_BYTES) {
-      setSelectedFile(null);
-      setError('File exceeds the 100 MB upload limit.');
-      return;
-    }
-    setSelectedFile(file);
+    setFile(next);
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function drop(event: DragEvent<HTMLElement>) {
     event.preventDefault();
-    if (!selectedFile) {
-      setError('Choose a video file first.');
-      return;
-    }
+    setDragging(false);
+    selectFile(event.dataTransfer.files?.[0] ?? null);
+  }
+
+  async function analyze(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!file || loading) return;
     setLoading(true);
-    setError(null);
-    setPrediction(null);
+    setError('');
+    setJobStatus('Uploading video…');
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      setJobStatus('Waking the service and uploading your video…');
-      const result = await submitVideo(API_URL, formData, setJobStatus);
-      const completed = { filename: selectedFile.name, ...result };
-      setPrediction(completed);
+      const data = new FormData();
+      data.append('file', file);
+      const result = await submitVideo(API_URL, data, setJobStatus);
+      const completed: Prediction = { ...result, filename: file.name };
       sessionStorage.setItem('veriframe:lastResult', JSON.stringify(completed));
-      navigate('/result');
-    } catch (submissionError) {
-      setError(submissionError instanceof Error ? submissionError.message : 'Unexpected error.');
+      go('/result');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
     } finally {
       setLoading(false);
       setJobStatus('');
@@ -368,118 +183,105 @@ function Analyze({ navigate }: { navigate: (path: AppPath) => void }) {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 5, md: 8 } }}>
-      <Stack spacing={4}>
-        <Box>
-          <Typography variant="overline" color="primary.main">Analyzer workspace</Typography>
-          <Typography variant="h1" sx={{ mt: 1 }}>Upload once. Get a focused verdict.</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 680 }}>
-            The analysis runs as a background job, so slower cold starts or queued requests do not block the interface.
-          </Typography>
-        </Box>
+    <main className="wrap workspace">
+      <div className="page-topline"><Eyebrow>ANALYSIS / 01</Eyebrow><span>MAXIMUM FILE SIZE · 100 MB</span></div>
+      <h1 className="page-title">Examine a clip.</h1>
+      <p className="page-description">Choose a video to run through the detector. You can inspect it before uploading.</p>
+      <div className="workspace-grid">
+        <form onSubmit={analyze} className="workspace-panel">
+          <div className="panel-kicker"><span>01 / VIDEO INPUT</span><span>LOCAL SELECTION</span></div>
+          <label className={dragging ? 'dropzone dropzone-active' : 'dropzone'} onDragOver={(e) => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={drop}>
+            <input type="file" accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.mkv" onChange={(e) => selectFile(e.target.files?.[0] ?? null)} disabled={loading} />
+            <span className="upload-mark" aria-hidden="true">↥</span>
+            <strong>{file ? file.name : 'Drop a video here'}</strong>
+            <span>{file ? (file.size / 1024 / 1024).toFixed(1) + ' MB · click to replace' : 'or browse your files'}</span>
+            <small>MP4 · MOV · WEBM · AVI · MKV</small>
+          </label>
+          <div className="workspace-note"><span>●</span> Only the selected file is sent when you choose “Run analysis”.</div>
+          <button type="submit" className="button-primary action-full" disabled={!file || loading}>{loading ? 'Processing…' : 'Run analysis'} <span aria-hidden="true">{loading ? '◌' : '↗'}</span></button>
+          {loading && <div className="task-status" role="status"><span className="busy-indicator" />{jobStatus || 'Working…'}<small>The service may need time to wake up or process earlier jobs.</small></div>}
+          {error && <p className="form-error" role="alert">{error}</p>}
+        </form>
+        <div className="workspace-panel preview-panel">
+          <div className="panel-kicker"><span>02 / PREVIEW</span><span>{file ? 'FILE READY' : 'AWAITING INPUT'}</span></div>
+          <div className="video-stage">
+            {preview ? <video controls src={preview} preload="metadata" aria-label="Selected video preview" /> : <div className="empty-preview"><div className="preview-cross" aria-hidden="true">+</div><strong>No clip selected</strong><span>Your video preview will appear here.</span></div>}
+          </div>
+          <div className="preview-bottom"><span>OUTPUT</span><p>Real / fake probabilities · sampled frame count · model confidence</p></div>
+        </div>
+      </div>
+      <p className="disclaimer-inline">This research model can make mistakes. A score is not proof that a video is authentic or manipulated.</p>
+    </main>
+  );
+}
 
-        {loading && jobStatus && (
-          <>
-            <Alert severity="info" icon={<CircularProgress size={18} />}>{jobStatus}</Alert>
-            <AnalysisProgress status={jobStatus} />
-          </>
-        )}
+function Result({ go }: { go: (path: Route) => void }) {
+  const [copied, setCopied] = useState(false);
+  const [result] = useState<Prediction | null>(() => {
+    try {
+      const stored = sessionStorage.getItem('veriframe:lastResult');
+      return stored ? JSON.parse(stored) as Prediction : null;
+    } catch { return null; }
+  });
+  if (!result) return <main className="wrap workspace"><Eyebrow>ANALYSIS / 02</Eyebrow><h1 className="page-title">No result yet.</h1><p className="page-description">Start with a video to see its model assessment.</p><button className="button-primary" onClick={() => go('/analyze')}>Open analyzer ↗</button></main>;
 
-        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
-          <Card>
-            <CardContent component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
-              <Stack spacing={2.5}>
-                <Box component="label" sx={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 1.25, px: 3, py: 7, borderRadius: 3, border: '1.5px dashed',
-                  borderColor: selectedFile ? 'primary.main' : 'divider', cursor: 'pointer', textAlign: 'center',
-                  backgroundColor: selectedFile ? 'rgba(124,140,248,.06)' : 'transparent',
-                  '&:hover': { borderColor: 'primary.main', backgroundColor: 'rgba(124,140,248,.06)' },
-                }}>
-                  <input type="file" accept="video/*" hidden onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)} />
-                  <CloudUploadOutlinedIcon color={selectedFile ? 'primary' : 'disabled'} sx={{ fontSize: 48 }} />
-                  <Typography sx={{ fontWeight: 700 }}>{selectedFile ? selectedFile.name : 'Drop a video or click to browse'}</Typography>
-                  <Typography variant="body2" color="text.secondary">MP4, MOV, WEBM, AVI · up to 100 MB</Typography>
-                </Box>
-                <Button type="submit" variant="contained" size="large" disabled={!selectedFile || loading} startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <MovieOutlinedIcon />}>
-                  {loading ? 'Analyzing…' : 'Run analysis'}
-                </Button>
-                {error && <Alert severity="error">{error}</Alert>}
-              </Stack>
-            </CardContent>
-          </Card>
+  const fake = result.predicted_label === 'fake';
+  async function copy() {
+    const summary = ['VeriFrame / model assessment', 'File: ' + result!.filename, 'Verdict: ' + (fake ? 'Likely manipulated' : 'Likely authentic'), 'Confidence: ' + pct(result!.confidence), 'Fake probability: ' + pct(result!.probabilities.fake), 'Real probability: ' + pct(result!.probabilities.real), 'Sampled frames: ' + result!.sampled_frames].join('\n');
+    try { await navigator.clipboard.writeText(summary); setCopied(true); } catch { setCopied(false); }
+  }
+  return (
+    <main className="wrap workspace">
+      <div className="page-topline"><Eyebrow>ANALYSIS / RESULT</Eyebrow><span>MODEL OUTPUT · NOT VERIFIED FACT</span></div>
+      <h1 className="page-title">The model's view.</h1>
+      <p className="page-description">Results describe the model's prediction, not the video's provenance.</p>
+      <div className="result-grid">
+        <section className="result-verdict">
+          <p className="panel-kicker">CLASSIFICATION / 01</p>
+          <span className="verdict-marker">{fake ? '!' : '○'}</span>
+          <h2>{fake ? 'Likely manipulated.' : 'Likely authentic.'}</h2>
+          <p>Model confidence</p><strong className="confidence">{pct(result.confidence)}</strong>
+          <span className="result-filename">{result.filename}</span>
+        </section>
+        <section className="result-data">
+          <p className="panel-kicker">PROBABILITY DISTRIBUTION / 02</p>
+          <ScoreBar label="Manipulated / fake" value={result.probabilities.fake} selected={fake} />
+          <ScoreBar label="Authentic / real" value={result.probabilities.real} selected={!fake} />
+          <div className="result-meta">
+            <div><span>FRAMES READ</span><strong>{result.frame_count}</strong></div>
+            <div><span>FRAMES SAMPLED</span><strong>{result.sampled_frames}</strong></div>
+            <div><span>PROCESS</span><strong>ASYNC INFERENCE</strong></div>
+          </div>
+          <p className="result-caution"><strong>Interpret with care.</strong> Compression, lighting, and unseen manipulation methods can affect the result. Do not treat this score as definitive proof.</p>
+        </section>
+      </div>
+      <div className="result-actions"><button className="button-primary" onClick={() => go('/analyze')}>Analyze another <span>↗</span></button><button className="button-outline" onClick={copy}>{copied ? 'Copied ✓' : 'Copy assessment ↗'}</button><button className="text-link" onClick={() => go('/how-it-works')}>Read the method ↗</button></div>
+    </main>
+  );
+}
 
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ minHeight: 320, borderRadius: 3, overflow: 'hidden', bgcolor: 'rgba(2,6,23,.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {previewUrl ? (
-                  <Box component="video" src={previewUrl} controls sx={{ width: '100%', display: 'block' }} />
-                ) : (
-                  <Stack spacing={0.75} sx={{ alignItems: 'center', p: 3, textAlign: 'center' }}>
-                    <MovieOutlinedIcon sx={{ fontSize: 42, color: 'text.disabled' }} />
-                    <Typography sx={{ fontWeight: 700 }}>Preview area</Typography>
-                    <Typography variant="body2" color="text.secondary">Choose a clip to inspect it before upload.</Typography>
-                  </Stack>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-
-        <Card sx={{ borderColor: prediction ? (isFake ? 'error.main' : 'success.main') : undefined }}>
-          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-            <Box sx={{ display: 'grid', gap: 4, gridTemplateColumns: { xs: '1fr', md: '.85fr 1.15fr' } }}>
-              <Box>
-                <Typography variant="overline" color="text.secondary">Verdict</Typography>
-                <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mt: 1 }}>
-                  {prediction && (isFake ? <GppBadOutlinedIcon color="error" /> : <GppGoodOutlinedIcon color="success" />)}
-                  <Typography variant="h2">{verdictLabel}</Typography>
-                </Stack>
-                <Typography color="text.secondary" sx={{ mt: 1.5 }}>
-                  {prediction
-                    ? `${formatPercent(prediction.confidence)} confidence across ${prediction.sampled_frames} sampled frames from ${prediction.filename}.`
-                    : 'Results will appear here after the analysis job completes.'}
-                </Typography>
-              </Box>
-              <Stack spacing={2.5}>
-                <ProbabilityRow label="Manipulated / fake" value={prediction ? prediction.probabilities.fake : null} color="error" />
-                <ProbabilityRow label="Authentic / real" value={prediction ? prediction.probabilities.real : null} color="success" />
-                <Divider />
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} divider={<Divider orientation="vertical" flexItem />}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="caption" color="text.secondary">Frames read</Typography>
-                    <Typography sx={{ fontWeight: 700 }}>{prediction?.frame_count ?? '--'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="caption" color="text.secondary">Frames sampled</Typography>
-                    <Typography sx={{ fontWeight: 700 }}>{prediction?.sampled_frames ?? '--'}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="caption" color="text.secondary">Processing</Typography>
-                    <Typography sx={{ fontWeight: 700 }}>Async job</Typography>
-                  </Box>
-                </Stack>
-              </Stack>
-            </Box>
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
+const method = [
+  ['01', 'Inspect', 'The service checks the upload format, size and whether the video can be decoded.'],
+  ['02', 'Sample', 'Ten frames are selected across the clip and resized to the model input.'],
+  ['03', 'Evaluate', 'EfficientNet-B4 spatial features are combined with frequency-domain features.'],
+  ['04', 'Estimate', 'Per-frame predictions are averaged to produce the displayed video-level scores.'],
+];
+function Method({ go }: { go: (path: Route) => void }) {
+  return (
+    <main className="wrap workspace method-page">
+      <Eyebrow>INSIDE THE SYSTEM</Eyebrow>
+      <h1 className="page-title">No magic.<br /><em>Just a model.</em></h1>
+      <p className="page-description">A four-step look at how a video becomes a probability estimate.</p>
+      <div className="method-list">
+        {method.map(([n, title, description]) => <div className="method-row" key={n}><span>{n}</span><h2>{title}</h2><p>{description}</p><span aria-hidden="true">↗</span></div>)}
+      </div>
+      <div className="method-disclaimer"><span>IMPORTANT / LIMITATION</span><p>A classification is evidence from this model, not a forensic certification. Confirm consequential claims with independent checks and original-source provenance.</p></div>
+      <div className="result-actions"><button className="button-primary" onClick={() => go('/analyze')}>Try the analyzer <span>↗</span></button></div>
+    </main>
   );
 }
 
 export default function App() {
-  const { path, navigate } = useAppRouter();
-  return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: 'radial-gradient(circle at 15% 0%, rgba(124,140,248,.15), transparent 38%), radial-gradient(circle at 85% 85%, rgba(77,208,177,.09), transparent 34%), #0b1120',
-    }}>
-      <Nav path={path} navigate={navigate} />
-      {path === '/' && <Home navigate={navigate} />}
-      {path === '/analyze' && <Analyze navigate={navigate} />}
-      {path === '/result' && <ResultPage navigate={navigate} />}
-      {path === '/how-it-works' && <About navigate={navigate} />}
-    </Box>
-  );
+  const { route, go } = useRoute();
+  return <div className="site-shell"><Header route={route} go={go} />{route === '/' && <Home go={go} />}{route === '/analyze' && <Analyzer go={go} />}{route === '/result' && <Result go={go} />}{route === '/how-it-works' && <Method go={go} />}<footer className="site-footer"><div className="wrap"><span>VERIFRAME / EXPERIMENTAL VIDEO ANALYSIS</span><span>BUILT FOR CRITICAL REVIEW, NOT CERTAINTY.</span></div></footer></div>;
 }
